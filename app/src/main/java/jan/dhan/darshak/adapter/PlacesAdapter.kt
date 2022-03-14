@@ -39,12 +39,12 @@ class PlacesAdapter(
 
     override fun onBindViewHolder(holder: PlacesViewHolder, position: Int) {
         val googlePlace = places[position]
-        val latitude = googlePlace?.get("lat")?.toDouble()
-        val longitude = googlePlace?.get("lng")?.toDouble()
-        val heading = googlePlace?.get("place_name")
+        val latitude = googlePlace?.get("latitude")?.toDouble()
+        val longitude = googlePlace?.get("longitude")?.toDouble()
+        val heading = googlePlace?.get("name")
         val location =
             if (latitude != null && longitude != null) LatLng(latitude, longitude) else null
-        val address = googlePlace?.get("vicinity")
+        val address = googlePlace?.get("address")
 
         if (heading != null)
             holder.tvResultHeading.text = heading
@@ -59,6 +59,6 @@ class PlacesAdapter(
         places.clear()
         places.addAll(newPlaces)
         currentLocation = location
-        notifyItemRangeInserted(0, newPlaces.size)
+        notifyDataSetChanged()
     }
 }

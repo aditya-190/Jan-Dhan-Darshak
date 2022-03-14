@@ -315,7 +315,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="64dp"
+            android:layout_marginBottom="52dp"
             android:elevation="10dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="10dp"
@@ -452,35 +452,45 @@
             app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/bottom_navigation_menu" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.55" />
+
         <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline1">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/mcvBottomSheetContainer"
+                style="@style/CustomCardViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
                 android:elevation="16dp"
                 app:behavior_hideable="false"
-                app:behavior_peekHeight="96dp"
+                app:behavior_peekHeight="36dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="16dp"
                 app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="72dp">
+                    android:layout_height="wrap_content">
 
                     <View
                         android:id="@+id/mcvScroller"
                         android:layout_width="50dp"
                         android:layout_height="4dp"
                         android:layout_marginTop="16dp"
-                        android:background="@color/navigationDefault"
+                        android:background="@drawable/bg_round"
                         android:backgroundTint="@color/navigationDefault"
-                        android:padding="16dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -490,6 +500,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
+                        android:layout_marginBottom="24dp"
                         android:contentDescription="@string/icon_no_data"
                         android:src="@drawable/icon_no_data"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -501,8 +512,9 @@
                         android:id="@+id/rvLocationList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
-                        android:clipToPadding="false"
+                        android:layout_marginTop="48dp"
+                        android:layout_marginBottom="48dp"
+                        android:overScrollMode="never"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

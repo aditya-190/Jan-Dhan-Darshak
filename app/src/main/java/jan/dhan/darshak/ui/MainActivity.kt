@@ -23,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bhardwaj.navigation.SlideGravity
 import com.bhardwaj.navigation.SlidingRootNav
 import com.bhardwaj.navigation.SlidingRootNavBuilder
@@ -41,6 +43,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import jan.dhan.darshak.R
+import jan.dhan.darshak.adapter.PlacesAdapter
 import jan.dhan.darshak.api.Api
 import jan.dhan.darshak.api.GooglePlaces
 import jan.dhan.darshak.databinding.ActivityMainBinding
@@ -51,6 +54,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
@@ -74,6 +78,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var selectedCategory: String = "atm"
     private var selectedFilter: String = "prominence"
     private lateinit var placesList: ArrayList<HashMap<String?, String?>?>
+    private lateinit var placesAdapter: PlacesAdapter
 
     companion object {
         private const val DEFAULT_ZOOM = 14F
@@ -146,6 +151,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
             }
+
+        placesAdapter = PlacesAdapter(this@MainActivity, arrayListOf())
+
+        binding.rvLocationList.also {
+            it.layoutManager =
+                LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+            it.adapter = placesAdapter
+            it.overScrollMode = View.OVER_SCROLL_NEVER
+            it.addItemDecoration(
+                DividerItemDecoration(this@MainActivity, DividerItemDecoration.VERTICAL)
+            )
+        }
     }
 
     private fun clickListeners() {
@@ -425,25 +442,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 when {
                     s.isNullOrEmpty() -> {
                         binding.ivSearchIcon.visibility = View.VISIBLE
                         binding.ivCloseIcon.visibility = View.GONE
-
-                        getNearbyPointsFromAPI(
-                            keyword = s.toString()
-                        )
                     }
                     else -> {
                         binding.ivSearchIcon.visibility = View.GONE
                         binding.ivCloseIcon.visibility = View.VISIBLE
+
+                        getNearbyPointsFromAPI(
+                            keyword = s.toString().lowercase()
+                        )
                     }
                 }
             }
@@ -654,11 +667,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                     textView.setTextColor(resources.getColor(R.color.black, theme))
                             }
 
-                            getNearbyPointsFromAPI(
-                                type = selectedCategory,
-                                radius = 10000,
-                                rankBy = selectedFilter
-                            )
+//                            getNearbyPointsFromAPI(
+//                                type = selectedCategory,
+//                                radius = 10000,
+//                                rankBy = selectedFilter
+//                            )
                         }
                     } else {
                         mGoogleMap.animateCamera(
@@ -741,14 +754,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun singlePlace(json: JSONObject): HashMap<String?, String?> {
         val map = HashMap<String?, String?>()
         try {
-            map["place_id"] = json.getString("place_id")
-            map["user_ratings_total"] = json.getString("user_ratings_total")
+            map["id"] = json.getString("place_id")
+            map["ratingCount"] = json.getString("user_ratings_total")
             map["rating"] = if (!json.isNull("rating")) json.getString("rating") else "0"
-            map["place_name"] = if (!json.isNull("name")) json.getString("name") else ""
-            map["vicinity"] = if (!json.isNull("vicinity")) json.getString("vicinity") else ""
-            map["lat"] = json.getJSONObject("geometry").getJSONObject("location").getString("lat")
-            map["lng"] = json.getJSONObject("geometry").getJSONObject("location").getString("lng")
-            map["isOpen"] =
+            map["name"] = if (!json.isNull("name")) json.getString("name") else ""
+            map["address"] = if (!json.isNull("vicinity")) json.getString("vicinity") else ""
+            map["latitude"] = json.getJSONObject("geometry").getJSONObject("location").getString("lat")
+            map["longitude"] = json.getJSONObject("geometry").getJSONObject("location").getString("lng")
+            map["open"] =
                 if (!json.isNull("opening_hours") && json.isNull("opening_hours").toString()
                         .isNotEmpty()
                 ) json.getJSONObject("opening_hours").getString("open_now") else "unknown"
@@ -765,22 +778,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         try {
             mGoogleMap.clear()
             placesList = places
+
+            placesAdapter.updateList(placesList, currentLocation)
+
+            if (placesList.size > 0) {
+                binding.rvLocationList.visibility = View.VISIBLE
+                binding.ivNoDataIcon.visibility = View.GONE
+            } else {
+                binding.rvLocationList.visibility = View.GONE
+                binding.ivNoDataIcon.visibility = View.VISIBLE
+            }
+
             for (i in places.indices) {
                 val markerOptions = MarkerOptions()
                 val googlePlace = places[i]
                 markerOptions.position(
                     LatLng(
-                        googlePlace?.get("lat")!!.toDouble(),
-                        googlePlace["lng"]!!.toDouble()
+                        googlePlace?.get("latitude")!!.toDouble(),
+                        googlePlace["longitude"]!!.toDouble()
                     )
                 )
-                markerOptions.title(googlePlace["place_name"])
-                markerOptions.snippet(googlePlace["vicinity"])
+                markerOptions.title(googlePlace["name"])
+                markerOptions.snippet(googlePlace["address"])
                 markerOptions.icon(bitmapFromVector(R.drawable.icon_marker))
                 val marker = mGoogleMap.addMarker(markerOptions)
 
-                if (!googlePlace["isOpen"].isNullOrEmpty()) {
-                    marker?.tag = googlePlace["isOpen"] + " " + googlePlace["place_id"]
+                if (!googlePlace["open"].isNullOrEmpty()) {
+                    marker?.tag = googlePlace["open"] + " " + googlePlace["id"]
                 }
             }
         } catch (e: Exception) {
