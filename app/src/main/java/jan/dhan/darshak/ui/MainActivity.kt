@@ -37,6 +37,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -77,7 +80,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var currentLanguage: String
     private var selectedCategory: String = "atm"
     private var selectedFilter: String = "prominence"
-    private lateinit var placesList: ArrayList<HashMap<String?, String?>?>
+    private var clickedFromBottomNavigation: Boolean = false
+    private var placesList: ArrayList<HashMap<String?, String?>?> = arrayListOf()
     private lateinit var placesAdapter: PlacesAdapter
 
     companion object {
@@ -152,7 +156,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
 
-        placesAdapter = PlacesAdapter(this@MainActivity, arrayListOf())
+        placesAdapter = PlacesAdapter(this@MainActivity, placesList)
 
         binding.rvLocationList.also {
             it.layoutManager =
@@ -171,6 +175,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 R.id.main -> {
                     selectedCategory = "atm"
                     selectedMarker = null
+                    clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.atm)
                     getNearbyPointsFromAPI(
@@ -183,6 +188,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 R.id.branch -> {
                     selectedCategory = "bank"
                     selectedMarker = null
+                    clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.branch)
                     getNearbyPointsFromAPI(
@@ -195,6 +201,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 R.id.post_office -> {
                     selectedCategory = "post_office"
                     selectedMarker = null
+                    clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.post_office)
                     getNearbyPointsFromAPI(
@@ -207,6 +214,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 R.id.csc -> {
                     selectedCategory = "Jan Seva Kendra"
                     selectedMarker = null
+                    clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.csc)
                     getNearbyPointsFromAPI(
@@ -218,6 +226,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 R.id.bank_mitra -> {
                     selectedCategory = "Bank Mitra"
                     selectedMarker = null
+                    clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.bank_mitra)
                     getNearbyPointsFromAPI(
@@ -454,9 +463,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         binding.ivSearchIcon.visibility = View.GONE
                         binding.ivCloseIcon.visibility = View.VISIBLE
 
-                        getNearbyPointsFromAPI(
-                            keyword = s.toString().lowercase()
-                        )
+                        if (!clickedFromBottomNavigation) {
+                            getNearbyPointsFromAPI(
+                                keyword = s.toString().lowercase()
+                            )
+                        } else clickedFromBottomNavigation = false
                     }
                 }
             }
@@ -722,7 +733,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         call.enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null) {
-                    showOnMap(parseJSON(response.body()))
+                    showOnMap(response.body())
                 }
             }
 
@@ -730,8 +741,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-    fun parseJSON(data: String?): ArrayList<HashMap<String?, String?>?> {
-        val places: ArrayList<HashMap<String?, String?>?> = arrayListOf()
+    fun showOnMap(data: String?) {
         var array: JSONArray? = null
         val single: JSONObject
         try {
@@ -741,76 +751,90 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             e.printStackTrace()
         }
 
+        mGoogleMap.clear()
+
         (0 until array?.length()!!).forEach { i ->
+            val map = HashMap<String?, String?>()
+
             try {
-                places.add(singlePlace(array[i] as JSONObject))
+                val json = array[i] as JSONObject
+                map["id"] = json.getString("place_id")
+
+                val placeFields = listOf(
+                    Place.Field.OPENING_HOURS,
+                    Place.Field.UTC_OFFSET,
+                    Place.Field.PHONE_NUMBER,
+                    Place.Field.WEBSITE_URI
+                )
+                val request = FetchPlaceRequest.newInstance(map["id"].toString(), placeFields)
+
+                placesClient.fetchPlace(request)
+                    .addOnSuccessListener { response: FetchPlaceResponse ->
+                        val place = response.place
+                        map["name"] = if (!json.isNull("name")) json.getString("name") else ""
+                        map["address"] =
+                            if (!json.isNull("vicinity")) json.getString("vicinity") else ""
+                        map["latitude"] = json.getJSONObject("geometry").getJSONObject("location")
+                            .getString("lat")
+                        map["longitude"] = json.getJSONObject("geometry").getJSONObject("location")
+                            .getString("lng")
+                        map["rating"] =
+                            if (!json.isNull("rating")) json.getString("rating") else "0"
+                        map["ratingCount"] =
+                            if (!json.isNull("user_ratings_total")) json.getString("user_ratings_total") else "0"
+                        map["open"] = if (!place.isOpen?.toString()
+                                .isNullOrEmpty()
+                        ) place.isOpen?.toString() else "false"
+
+                        val closesTimings =
+                            place.openingHours?.periods?.get(0)?.close?.time?.hours.toString()
+                        if (closesTimings.isNotEmpty() && closesTimings != "null") {
+                            if (closesTimings.toInt() > 12)
+                                map["close"] = "· Closes ${closesTimings.toInt() % 12} PM"
+                            else
+                                map["close"] = "· Closes ${closesTimings.toInt() % 12} AM"
+                        } else {
+                            map["close"] = ""
+                        }
+                        map["phoneNumber"] = if (!place.phoneNumber?.toString()
+                                .isNullOrEmpty()
+                        ) place.phoneNumber?.toString() else ""
+                        map["website"] = if (!place.websiteUri?.toString()
+                                .isNullOrEmpty()
+                        ) place.websiteUri?.toString() else ""
+
+                        placesList.add(map)
+
+                        placesAdapter.updateList(map, currentLocation, placesList.size - 1)
+
+                        if (placesList.size > 0) {
+                            binding.rvLocationList.visibility = View.VISIBLE
+                            binding.ivNoDataIcon.visibility = View.GONE
+                        } else {
+                            binding.rvLocationList.visibility = View.GONE
+                            binding.ivNoDataIcon.visibility = View.VISIBLE
+                        }
+
+                        val markerOptions = MarkerOptions()
+                        markerOptions.position(
+                            LatLng(
+                                map["latitude"]!!.toDouble(),
+                                map["longitude"]!!.toDouble()
+                            )
+                        )
+                        markerOptions.title(map["name"])
+                        markerOptions.snippet(map["address"])
+                        markerOptions.icon(bitmapFromVector(R.drawable.icon_marker))
+                        val marker = mGoogleMap.addMarker(markerOptions)
+
+                        if (!map["open"].isNullOrEmpty()) {
+                            marker?.tag = map["open"] + " " + map["id"]
+                        }
+                    }.addOnFailureListener {}
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
         }
-        return places
-    }
-
-    private fun singlePlace(json: JSONObject): HashMap<String?, String?> {
-        val map = HashMap<String?, String?>()
-        try {
-            map["id"] = json.getString("place_id")
-            map["ratingCount"] = json.getString("user_ratings_total")
-            map["rating"] = if (!json.isNull("rating")) json.getString("rating") else "0"
-            map["name"] = if (!json.isNull("name")) json.getString("name") else ""
-            map["address"] = if (!json.isNull("vicinity")) json.getString("vicinity") else ""
-            map["latitude"] = json.getJSONObject("geometry").getJSONObject("location").getString("lat")
-            map["longitude"] = json.getJSONObject("geometry").getJSONObject("location").getString("lng")
-            map["open"] =
-                if (!json.isNull("opening_hours") && json.isNull("opening_hours").toString()
-                        .isNotEmpty()
-                ) json.getJSONObject("opening_hours").getString("open_now") else "unknown"
-
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        return map
-    }
-
-    private fun showOnMap(
-        places: ArrayList<HashMap<String?, String?>?>,
-    ) {
-        try {
-            mGoogleMap.clear()
-            placesList = places
-
-            placesAdapter.updateList(placesList, currentLocation)
-
-            if (placesList.size > 0) {
-                binding.rvLocationList.visibility = View.VISIBLE
-                binding.ivNoDataIcon.visibility = View.GONE
-            } else {
-                binding.rvLocationList.visibility = View.GONE
-                binding.ivNoDataIcon.visibility = View.VISIBLE
-            }
-
-            for (i in places.indices) {
-                val markerOptions = MarkerOptions()
-                val googlePlace = places[i]
-                markerOptions.position(
-                    LatLng(
-                        googlePlace?.get("latitude")!!.toDouble(),
-                        googlePlace["longitude"]!!.toDouble()
-                    )
-                )
-                markerOptions.title(googlePlace["name"])
-                markerOptions.snippet(googlePlace["address"])
-                markerOptions.icon(bitmapFromVector(R.drawable.icon_marker))
-                val marker = mGoogleMap.addMarker(markerOptions)
-
-                if (!googlePlace["open"].isNullOrEmpty()) {
-                    marker?.tag = googlePlace["open"] + " " + googlePlace["id"]
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
         mGoogleMap.addMarker(
             MarkerOptions().position(currentLocation).title("Current Location")
                 .icon(bitmapFromVector(R.drawable.icon_current_location))
