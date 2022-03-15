@@ -50,7 +50,6 @@ class PlacesAdapter(
 
     override fun onBindViewHolder(holder: PlacesViewHolder, position: Int) {
         val place = places[position]
-        val id = place?.get("id")
         val heading = place?.get("name")
         val address = place?.get("address")
         val latitude = place?.get("latitude")?.toDouble()
@@ -77,7 +76,6 @@ class PlacesAdapter(
         val timings = "$open $close"
         val compatTimings = "$compatOpen $close"
         val phoneNumber = place?.get("phoneNumber")
-        val website = place?.get("website")
 
         holder.tvResultHeading.text = heading
         holder.tvAddress.text = address
@@ -137,8 +135,7 @@ class PlacesAdapter(
 
     override fun getItemCount() = places.size
 
-    fun updateList(newPlace: HashMap<String?, String?>?, location: LatLng, position: Int) {
-        places.add(newPlace)
+    fun updateList(location: LatLng, position: Int) {
         currentLocation = location
         notifyItemInserted(position)
     }

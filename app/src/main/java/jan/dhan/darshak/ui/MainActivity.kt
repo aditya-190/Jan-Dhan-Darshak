@@ -149,17 +149,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     if (!spokenText.isNullOrEmpty()) {
                         binding.etSearch.setText(spokenText[0])
                         selectedMarker = null
-
-                        if (selectedFilter == "openNow" || selectedFilter == "topRated")
-                            getNearbyPointsFromAPI(
-                                keyword = spokenText[0],
-                                openNow = "true"
-                            )
-                        else
-                            getNearbyPointsFromAPI(
-                                keyword = spokenText[0].lowercase(),
-                                rankBy = selectedFilter,
-                            )
                     }
                 }
             }
@@ -186,11 +175,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.atm)
-                    getNearbyPointsFromAPI(
-                        type = "atm",
-                        radius = 10000,
-                        rankBy = selectedFilter
-                    )
+                    if (selectedFilter == "openNow") {
+                        getNearbyPointsFromAPI(
+                            type = "atm",
+                            radius = 10000,
+                            openNow = "true"
+                        )
+                    } else {
+                        getNearbyPointsFromAPI(
+                            type = "atm",
+                            radius = if (selectedFilter == "distance") null else 10000,
+                            rankBy = selectedFilter
+                        )
+                    }
                 }
 
                 R.id.branch -> {
@@ -199,11 +196,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.branch)
-                    getNearbyPointsFromAPI(
-                        type = "bank",
-                        radius = 10000,
-                        rankBy = selectedFilter
-                    )
+                    if (selectedFilter == "openNow") {
+                        getNearbyPointsFromAPI(
+                            type = "bank",
+                            radius = 10000,
+                            openNow = "true"
+                        )
+                    } else {
+                        getNearbyPointsFromAPI(
+                            type = "bank",
+                            radius = if (selectedFilter == "distance") null else 10000,
+                            rankBy = selectedFilter
+                        )
+                    }
                 }
 
                 R.id.post_office -> {
@@ -212,11 +217,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.post_office)
-                    getNearbyPointsFromAPI(
-                        type = "post_office",
-                        radius = 10000,
-                        rankBy = selectedFilter
-                    )
+                    if (selectedFilter == "openNow") {
+                        getNearbyPointsFromAPI(
+                            type = "post_office",
+                            radius = 10000,
+                            openNow = "true"
+                        )
+                    } else {
+                        getNearbyPointsFromAPI(
+                            type = "post_office",
+                            radius = if (selectedFilter == "distance") null else 10000,
+                            rankBy = selectedFilter
+                        )
+                    }
                 }
 
                 R.id.csc -> {
@@ -225,10 +238,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.csc)
-                    getNearbyPointsFromAPI(
-                        keyword = "Jan Seva Kendra",
-                        rankBy = selectedFilter
-                    )
+                    if (selectedFilter == "openNow") {
+                        getNearbyPointsFromAPI(
+                            keyword = "csc",
+                            radius = if (selectedFilter == "distance") null else 10000,
+                            openNow = "true"
+                        )
+                    } else {
+                        getNearbyPointsFromAPI(
+                            keyword = "csc",
+                            radius = if (selectedFilter == "distance") null else 10000,
+                            rankBy = selectedFilter
+                        )
+                    }
                 }
 
                 R.id.bank_mitra -> {
@@ -237,10 +259,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     clickedFromBottomNavigation = true
 
                     binding.etSearch.setText(R.string.bank_mitra)
-                    getNearbyPointsFromAPI(
-                        keyword = "Bank Mitra",
-                        rankBy = selectedFilter
-                    )
+                    if (selectedFilter == "openNow") {
+                        getNearbyPointsFromAPI(
+                            keyword = "Bank Mitra",
+                            radius = if (selectedFilter == "distance") null else 10000,
+                            openNow = "true"
+                        )
+                    } else {
+                        getNearbyPointsFromAPI(
+                            keyword = "Bank Mitra",
+                            radius = if (selectedFilter == "distance") null else 10000,
+                            rankBy = selectedFilter
+                        )
+                    }
                 }
             }
             true
@@ -314,7 +345,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             }
 
             selectedFilter = "prominence"
-            val typeFilter: List<String> = listOf("atm", "branch", "bank mitra")
+            val typeFilter: List<String> = listOf("atm", "branch", "post office")
 
             if (typeFilter.contains(binding.etSearch.text.toString().lowercase())) {
                 getNearbyPointsFromAPI(
@@ -325,6 +356,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             } else {
                 getNearbyPointsFromAPI(
                     keyword = binding.etSearch.text.toString().lowercase(),
+                    radius = 10000,
+                    rankBy = selectedFilter
                 )
             }
         }
@@ -345,7 +378,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
             selectedFilter = "distance"
 
-            val typeFilter: List<String> = listOf("atm", "branch", "bank mitra")
+            val typeFilter: List<String> = listOf("atm", "branch", "post office")
 
             if (typeFilter.contains(binding.etSearch.text.toString().lowercase())) {
                 getNearbyPointsFromAPI(
@@ -376,7 +409,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
             selectedFilter = "openNow"
 
-            val typeFilter: List<String> = listOf("atm", "branch", "bank mitra")
+            val typeFilter: List<String> = listOf("atm", "branch", "post office")
 
             if (typeFilter.contains(binding.etSearch.text.toString().lowercase())) {
                 getNearbyPointsFromAPI(
@@ -387,7 +420,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             } else {
                 getNearbyPointsFromAPI(
                     keyword = binding.etSearch.text.toString().lowercase(),
-                    openNow = "true"
+                    openNow = "true",
+                    radius = 10000,
                 )
             }
         }
@@ -406,9 +440,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     textView.setTextColor(resources.getColor(R.color.black, theme))
             }
 
-            selectedFilter = "topRated"
+            selectedFilter = "prominence"
 
-            val typeFilter: List<String> = listOf("atm", "branch", "bank mitra")
+            val typeFilter: List<String> = listOf("atm", "branch", "post office")
 
             if (typeFilter.contains(binding.etSearch.text.toString().lowercase())) {
                 getNearbyPointsFromAPI(
@@ -419,6 +453,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             } else {
                 getNearbyPointsFromAPI(
                     keyword = binding.etSearch.text.toString().lowercase(),
+                    radius = 10000,
+                    rankBy = selectedFilter
                 )
             }
         }
@@ -472,9 +508,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                         binding.ivCloseIcon.visibility = View.VISIBLE
 
                         if (!clickedFromBottomNavigation) {
-                            getNearbyPointsFromAPI(
-                                keyword = s.toString().lowercase()
-                            )
+                            if (selectedFilter == "openNow") {
+                                getNearbyPointsFromAPI(
+                                    keyword = s.toString().lowercase(),
+                                    radius = if (selectedFilter == "distance") null else 10000,
+                                    openNow = "true"
+                                )
+                            } else {
+                                getNearbyPointsFromAPI(
+                                    keyword = s.toString().lowercase(),
+                                    radius = if (selectedFilter == "distance") null else 10000,
+                                    rankBy = selectedFilter
+                                )
+                            }
                         } else clickedFromBottomNavigation = false
                     }
                 }
@@ -623,7 +669,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                 binding.tvPinnedAddress.text = place.address?.toString()
                 binding.rbPinnedRatings.rating = place.rating?.toString()?.toFloat() ?: 0F
 
-                val userRatingCount = if (place.userRatingsTotal?.toString() == "null") "" else "(${place.userRatingsTotal?.toString()})"
+                val userRatingCount =
+                    if (place.userRatingsTotal?.toString() == "null") "" else "(${place.userRatingsTotal?.toString()})"
                 binding.tvPinnedRatingCount.text = userRatingCount
 
                 val open = if (place.isOpen == true)
@@ -672,9 +719,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
                 binding.ivPinnedCallIcon.setOnClickListener {
                     if (!place.phoneNumber?.toString().isNullOrEmpty())
-                        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${place.phoneNumber?.toString()}")))
+                        startActivity(
+                            Intent(
+                                Intent.ACTION_DIAL,
+                                Uri.parse("tel:${place.phoneNumber?.toString()}")
+                            )
+                        )
                     else
-                        Toast.makeText(this@MainActivity, "Phone number not Provided.", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Phone number not Provided.",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                 }
 
@@ -929,11 +985,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                                     textView.setTextColor(resources.getColor(R.color.black, theme))
                             }
 
-                            getNearbyPointsFromAPI(
-                                type = selectedCategory,
-                                radius = 10000,
-                                rankBy = selectedFilter
-                            )
+                            if (selectedFilter == "openNow") {
+                                getNearbyPointsFromAPI(
+                                    type = selectedCategory,
+                                    radius = if (selectedFilter == "distance") null else 10000,
+                                    openNow = "true"
+                                )
+                            } else {
+                                getNearbyPointsFromAPI(
+                                    type = selectedCategory,
+                                    radius = if (selectedFilter == "distance") null else 10000,
+                                    rankBy = selectedFilter
+                                )
+                            }
                         }
                     } else {
                         mGoogleMap.animateCamera(
@@ -1071,7 +1135,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
                         placesList.add(map)
 
-                        placesAdapter.updateList(map, currentLocation, placesList.size - 1)
+                        placesAdapter.updateList(currentLocation, placesList.size - 1)
 
                         if (placesList.size > 0) {
                             binding.rvLocationList.visibility = View.VISIBLE
