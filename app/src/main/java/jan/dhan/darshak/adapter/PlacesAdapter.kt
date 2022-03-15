@@ -144,8 +144,7 @@ class PlacesAdapter(
     }
 
     fun removeAll() {
-        val size = places.size
         places.clear()
-        notifyItemRangeRemoved(0, size)
+        notifyDataSetChanged()
     }
 }

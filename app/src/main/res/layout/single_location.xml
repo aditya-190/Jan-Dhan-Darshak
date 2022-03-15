@@ -58,7 +58,7 @@
         android:id="@+id/tvRatingCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/poppins_regular"
         android:textColor="@color/hint_text_color"
         android:textSize="12sp"

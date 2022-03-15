@@ -1,6 +1,7 @@
 package jan.dhan.darshak.ui
 
 import android.Manifest
+import android.animation.Animator
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -8,10 +9,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
 import android.text.Editable
+import android.text.Html
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
@@ -24,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bhardwaj.navigation.SlideGravity
@@ -540,22 +544,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         slidingRootNavLayout.findViewById<ImageView>(R.id.ivCloseButton)?.setOnClickListener {
             slidingRootNavBuilder.closeMenu(true)
         }
-
-        binding.ivPinnedDirectionIcon.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Directions", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.ivPinnedCallIcon.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Call", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.ivPinnedSaveIcon.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Save", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.ivPinnedSpeak.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Speak Out Load", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun bitmapFromVector(vectorResId: Int): BitmapDescriptor {
@@ -592,6 +580,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
                 selectedMarker?.setIcon(bitmapFromVector(R.drawable.icon_marker_selected))
                 previousSelectedMarker = selectedMarker
+                fetchPinnedData(marker.snippet)
             }
             true
         }
@@ -605,11 +594,269 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             selectedMarkerLocation = currentLocation
             selectedMarker = null
             previousSelectedMarker = null
+            hideAndShowPinnedLocation()
         }
 
         getLocationPermission()
         updateLocationUI()
         getDeviceLocation()
+    }
+
+    private fun fetchPinnedData(pinnedId: String?) {
+        hideShowProgressBar(showProgressbar = true)
+
+        val placeFields = listOf(
+            Place.Field.NAME,
+            Place.Field.ADDRESS,
+            Place.Field.RATING,
+            Place.Field.PHONE_NUMBER,
+            Place.Field.USER_RATINGS_TOTAL,
+            Place.Field.OPENING_HOURS,
+            Place.Field.UTC_OFFSET
+        )
+        val request = FetchPlaceRequest.newInstance(pinnedId!!, placeFields)
+
+        placesClient.fetchPlace(request)
+            .addOnSuccessListener { response: FetchPlaceResponse ->
+                val place = response.place
+                binding.tvPinnedHeading.text = place.name?.toString()
+                binding.tvPinnedAddress.text = place.address?.toString()
+                binding.rbPinnedRatings.rating = place.rating?.toString()?.toFloat() ?: 0F
+
+                val userRatingCount = if (place.userRatingsTotal?.toString() == "null") "" else "(${place.userRatingsTotal?.toString()})"
+                binding.tvPinnedRatingCount.text = userRatingCount
+
+                val open = if (place.isOpen == true)
+                    "<font color=\"${
+                        resources.getColor(R.color.green_color, theme)
+                    }\">Open Now</font>"
+                else
+                    "<font color=\"${
+                        resources.getColor(R.color.navigationSelected, theme)
+                    }\">Closed</font>"
+
+                val compatOpen = if (place.isOpen == true) "Open Now" else "Closed"
+
+                var close = ""
+                val closesTimings =
+                    place.openingHours?.periods?.get(0)?.close?.time?.hours.toString()
+                if (closesTimings.isNotEmpty() && closesTimings != "null") {
+                    close = if (closesTimings.toInt() > 12)
+                        "· Closes ${closesTimings.toInt() % 12} PM"
+                    else
+                        "· Closes ${closesTimings.toInt() % 12} AM"
+                }
+
+                val timings = "$open $close"
+                val compatTimings = "$compatOpen $close"
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    binding.tvPinnedTimings.setText(
+                        Html.fromHtml(timings, HtmlCompat.FROM_HTML_MODE_LEGACY),
+                        TextView.BufferType.SPANNABLE
+                    )
+                } else {
+                    binding.tvPinnedTimings.text = compatTimings
+                }
+
+                binding.ivPinnedDirectionIcon.setOnClickListener {
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("google.navigation:q=${selectedMarkerLocation?.latitude},${selectedMarkerLocation?.longitude}")
+                    ).also {
+                        it.`package` = "com.google.android.apps.maps"
+                        if (it.resolveActivity(packageManager) != null)
+                            startActivity(it)
+                    }
+                }
+
+                binding.ivPinnedCallIcon.setOnClickListener {
+                    if (!place.phoneNumber?.toString().isNullOrEmpty())
+                        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${place.phoneNumber?.toString()}")))
+                    else
+                        Toast.makeText(this@MainActivity, "Phone number not Provided.", Toast.LENGTH_SHORT)
+                            .show()
+                }
+
+                binding.ivPinnedSaveIcon.setOnClickListener {
+                    Toast.makeText(this@MainActivity, "Save", Toast.LENGTH_SHORT).show()
+                }
+
+                binding.ivPinnedSpeak.setOnClickListener {
+                    sayOutLoud("${binding.tvPinnedHeading.text}")
+                }
+
+                hideAndShowPinnedLocation()
+                hideShowProgressBar(showProgressbar = false)
+
+            }.addOnFailureListener {
+                hideShowProgressBar(showProgressbar = false)
+            }
+    }
+
+    private fun hideAndShowPinnedLocation() {
+        if (selectedMarker != null) {
+            binding.mcvPinnedContainer.visibility = View.VISIBLE
+
+            binding.bottomNavigation
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.bottomNavigation.visibility = View.GONE
+                    }
+                })
+
+            binding.mcvBottomSheetContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvBottomSheetContainer.visibility = View.GONE
+                    }
+                })
+
+            binding.mcvCurrentContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvCurrentContainer.visibility = View.GONE
+                    }
+                })
+
+            binding.mcvDirectionContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvDirectionContainer.visibility = View.GONE
+                    }
+                })
+
+            binding.mcvLayerContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvLayerContainer.visibility = View.GONE
+                    }
+                })
+
+            binding.mcvNorthFacingContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvNorthFacingContainer.visibility = View.GONE
+                    }
+                })
+
+        } else {
+            binding.mcvPinnedContainer.visibility = View.GONE
+
+            binding.bottomNavigation
+                .animate()
+                .alpha(1.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.bottomNavigation.visibility = View.VISIBLE
+                    }
+                })
+
+            binding.mcvBottomSheetContainer
+                .animate()
+                .alpha(1.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvBottomSheetContainer.visibility = View.VISIBLE
+                    }
+                })
+
+            binding.mcvCurrentContainer
+                .animate()
+                .alpha(1.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvCurrentContainer.visibility = View.VISIBLE
+                    }
+                })
+
+            binding.mcvDirectionContainer
+                .animate()
+                .alpha(1.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvDirectionContainer.visibility = View.VISIBLE
+                    }
+                })
+
+            binding.mcvLayerContainer
+                .animate()
+                .alpha(1.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvLayerContainer.visibility = View.VISIBLE
+                    }
+                })
+
+            binding.mcvNorthFacingContainer
+                .animate()
+                .alpha(1.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvNorthFacingContainer.visibility = View.VISIBLE
+                    }
+                })
+        }
     }
 
     private fun updateLocationUI() {
@@ -842,7 +1089,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                             )
                         )
                         markerOptions.title(map["name"])
-                        markerOptions.snippet(map["address"])
+                        markerOptions.snippet(map["id"])
                         markerOptions.icon(bitmapFromVector(R.drawable.icon_marker))
                         val marker = mGoogleMap.addMarker(markerOptions)
 
