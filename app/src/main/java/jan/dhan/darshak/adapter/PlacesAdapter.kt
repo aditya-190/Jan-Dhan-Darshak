@@ -2,8 +2,9 @@ package jan.dhan.darshak.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.PorterDuff
 import android.net.Uri
+import android.os.Build
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,12 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter.PlacesViewHolder
+import jan.dhan.darshak.ui.MainActivity
 
 
 class PlacesAdapter(
@@ -55,9 +57,25 @@ class PlacesAdapter(
         val longitude = place?.get("longitude")?.toDouble()
         val rating = place?.get("rating")
         val ratingCount = "(${place?.get("ratingCount")})"
-        val open = if (place?.get("open").toBoolean()) "Open Now" else "Closed"
+        val open = if (place?.get("open").toBoolean())
+            "<font color=\"${
+                mContext.resources.getColor(
+                    R.color.green_color,
+                    mContext.theme
+                )
+            }\">Open Now</font>"
+        else
+            "<font color=\"${
+                mContext.resources.getColor(
+                    R.color.navigationSelected,
+                    mContext.theme
+                )
+            }\">Closed</font>"
+
+        val compatOpen = if (place?.get("open").toBoolean()) "Open Now" else "Closed"
         val close = place?.get("close")
         val timings = "$open $close"
+        val compatTimings = "$compatOpen $close"
         val phoneNumber = place?.get("phoneNumber")
         val website = place?.get("website")
 
@@ -65,10 +83,13 @@ class PlacesAdapter(
         holder.tvAddress.text = address
         holder.rbRatings.rating = rating?.toFloat() ?: 4F
         holder.tvRatingCount.text = ratingCount
-        holder.tvTimings.text = timings
-
-        holder.ivShareIcon.setOnClickListener {
-            Toast.makeText(mContext, "Share Button Clicked", Toast.LENGTH_SHORT).show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.tvTimings.setText(
+                Html.fromHtml(timings, HtmlCompat.FROM_HTML_MODE_LEGACY),
+                TextView.BufferType.SPANNABLE
+            )
+        } else {
+            holder.tvTimings.text = compatTimings
         }
 
         holder.ivSaveIcon.setOnClickListener {
@@ -76,15 +97,30 @@ class PlacesAdapter(
         }
 
         holder.ivSpeak.setOnClickListener {
-            Toast.makeText(mContext, "Speak Button Clicked", Toast.LENGTH_SHORT).show()
+            (mContext as MainActivity).sayOutLoud("$heading")
+        }
+
+        holder.ivShareIcon.setOnClickListener {
+            Intent(Intent.ACTION_SEND).also {
+                it.type = "text/plain"
+                it.putExtra(Intent.EXTRA_SUBJECT, "Location")
+                it.putExtra(
+                    Intent.EXTRA_TEXT,
+                    "${heading}\n$address\nhttps://www.google.co.id/maps/@$latitude,$longitude"
+                )
+                mContext.startActivity(Intent.createChooser(it, "Share using:"))
+            }
         }
 
         holder.clSinglePlace.setOnClickListener {
-            Toast.makeText(mContext, "Whole Clicked", Toast.LENGTH_SHORT).show()
+            (mContext as MainActivity).zoomToCurrentSelectedPlace(LatLng(latitude!!, longitude!!))
         }
 
         holder.ivCallIcon.setOnClickListener {
-            mContext.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
+            if (!phoneNumber.isNullOrEmpty())
+                mContext.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
+            else
+                Toast.makeText(mContext, "Phone number not Provided.", Toast.LENGTH_SHORT).show()
         }
 
         holder.ivDirectionIcon.setOnClickListener {
@@ -105,5 +141,11 @@ class PlacesAdapter(
         places.add(newPlace)
         currentLocation = location
         notifyItemInserted(position)
+    }
+
+    fun removeAll() {
+        val size = places.size
+        places.clear()
+        notifyItemRangeRemoved(0, size)
     }
 }

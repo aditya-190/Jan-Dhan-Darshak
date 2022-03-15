@@ -26,6 +26,7 @@
             android:layout_margin="16dp"
             android:background="@color/white"
             android:elevation="8dp"
+            android:minHeight="48dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,6 +36,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -57,9 +59,9 @@
                     android:layout_marginEnd="0dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/icon_cancel"
-                    android:paddingVertical="6dp"
                     android:src="@drawable/icon_cancel"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    app:tint="@color/hint_text_color" />
 
                 <EditText
                     android:id="@+id/etSearch"
@@ -88,7 +90,6 @@
                     android:id="@+id/ivVoiceSearch"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginVertical="12dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="0dp"
                     android:layout_weight="1"
@@ -96,21 +97,38 @@
                     android:clickable="true"
                     android:contentDescription="@string/icon_voice_search"
                     android:focusable="true"
-                    android:src="@drawable/icon_voice" />
+                    android:src="@drawable/icon_voice"
+                    app:tint="@color/hint_text_color" />
 
                 <ImageView
                     android:id="@+id/ivMenu"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginVertical="12dp"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:contentDescription="@string/icon_menu"
                     android:focusable="true"
-                    android:padding="4dp"
-                    android:src="@drawable/icon_menu" />
+                    android:src="@drawable/icon_menu"
+                    android:visibility="gone"
+                    app:tint="@color/hint_text_color" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="24dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/hint_text_color"
+                    android:indeterminateTintMode="src_atop"
+                    android:visibility="visible"
+                    app:tint="@color/hint_text_color" />
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
@@ -512,11 +530,10 @@
                         android:id="@+id/rvLocationList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="48dp"
-                        android:layout_marginBottom="48dp"
+                        android:layout_marginTop="16dp"
                         android:overScrollMode="never"
+                        android:paddingBottom="48dp"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/mcvScroller"

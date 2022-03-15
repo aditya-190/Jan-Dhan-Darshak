@@ -17,6 +17,7 @@
     <color name="divider_color">#dad8d8</color>
     <color name="marker_color">#FF0C91FF</color>
     <color name="marker_color_selected">#F03A3A</color>
-    <color name="ratingColor">#FBC02D</color>
+    <color name="rating_color">#FBC02D</color>
+    <color name="green_color">#8BC34A</color>
 
 </resources>

@@ -10,6 +10,7 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -59,7 +60,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnInitListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<MaterialCardView>
     private lateinit var slidingRootNavBuilder: SlidingRootNav
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var clickedFromBottomNavigation: Boolean = false
     private var placesList: ArrayList<HashMap<String?, String?>?> = arrayListOf()
     private lateinit var placesAdapter: PlacesAdapter
+    private var textToSpeech: TextToSpeech? = null
 
     companion object {
         private const val DEFAULT_ZOOM = 14F
@@ -131,6 +133,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         (supportFragmentManager.findFragmentById(R.id.fragment_google_maps) as SupportMapFragment).getMapAsync(
             this@MainActivity
         )
+
+        textToSpeech = TextToSpeech(this@MainActivity, this@MainActivity)
 
         voiceResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -678,11 +682,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                     textView.setTextColor(resources.getColor(R.color.black, theme))
                             }
 
-//                            getNearbyPointsFromAPI(
-//                                type = selectedCategory,
-//                                radius = 10000,
-//                                rankBy = selectedFilter
-//                            )
+                            getNearbyPointsFromAPI(
+                                type = selectedCategory,
+                                radius = 10000,
+                                rankBy = selectedFilter
+                            )
                         }
                     } else {
                         mGoogleMap.animateCamera(
@@ -716,6 +720,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         language: String = currentLanguage,
         api: String = apiKey
     ) {
+        hideShowProgressBar(showProgressbar = true)
+        mGoogleMap.clear()
+        placesList.clear()
+        placesAdapter.removeAll()
+
+        if (placesList.size > 0) {
+            binding.rvLocationList.visibility = View.VISIBLE
+            binding.ivNoDataIcon.visibility = View.GONE
+        } else {
+            binding.rvLocationList.visibility = View.GONE
+            binding.ivNoDataIcon.visibility = View.VISIBLE
+        }
+
+
         val request = GooglePlaces.buildService(Api::class.java)
         val call = request.getPlaces(
             keyword = keyword,
@@ -737,7 +755,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
 
-            override fun onFailure(call: Call<String>?, t: Throwable?) {}
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                hideShowProgressBar(showProgressbar = false)
+            }
         })
     }
 
@@ -748,10 +768,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             single = JSONObject(data!!)
             array = single.getJSONArray("results")
         } catch (e: JSONException) {
+            hideShowProgressBar(showProgressbar = false)
             e.printStackTrace()
         }
-
-        mGoogleMap.clear()
 
         (0 until array?.length()!!).forEach { i ->
             val map = HashMap<String?, String?>()
@@ -830,8 +849,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         if (!map["open"].isNullOrEmpty()) {
                             marker?.tag = map["open"] + " " + map["id"]
                         }
-                    }.addOnFailureListener {}
+                    }.addOnFailureListener {
+                        hideShowProgressBar(showProgressbar = false)
+                    }
             } catch (e: JSONException) {
+                hideShowProgressBar(showProgressbar = false)
                 e.printStackTrace()
             }
         }
@@ -839,6 +861,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             MarkerOptions().position(currentLocation).title("Current Location")
                 .icon(bitmapFromVector(R.drawable.icon_current_location))
         )
+        hideShowProgressBar(showProgressbar = false)
+    }
+
+    fun zoomToCurrentSelectedPlace(location: LatLng) {
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 20F))
+    }
+
+    fun hideShowProgressBar(showProgressbar: Boolean) {
+        if (showProgressbar) {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.ivMenu.visibility = View.GONE
+        } else {
+            binding.progressBar.visibility = View.GONE
+            binding.ivMenu.visibility = View.VISIBLE
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -858,5 +895,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
         updateLocationUI()
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            textToSpeech!!.language = Locale.ENGLISH
+        }
+    }
+
+    fun sayOutLoud(message: String) {
+        textToSpeech!!.speak(message, TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+    override fun onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech!!.stop()
+            textToSpeech!!.shutdown()
+        }
+        super.onDestroy()
     }
 }
