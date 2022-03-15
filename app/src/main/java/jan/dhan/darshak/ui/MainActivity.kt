@@ -1034,6 +1034,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         hideShowProgressBar(showProgressbar = true)
         mGoogleMap.clear()
         placesList.clear()
+        previousSelectedMarker = null
+
         placesAdapter.removeAll()
 
         if (placesList.size > 0) {
