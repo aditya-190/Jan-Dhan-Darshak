@@ -3,6 +3,7 @@ package jan.dhan.darshak.ui
 import android.Manifest
 import android.animation.Animator
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -28,6 +29,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bhardwaj.navigation.SlideGravity
@@ -50,11 +52,15 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
+import jan.dhan.darshak.FavoriteBottomFragment.Favoritefragment
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter
 import jan.dhan.darshak.api.Api
 import jan.dhan.darshak.api.GooglePlaces
+import jan.dhan.darshak.database.Favoriteentity
+import jan.dhan.darshak.database.favoriteplacesapp
 import jan.dhan.darshak.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -558,6 +564,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         }
 
         slidingRootNavLayout.findViewById<TextView>(R.id.tvFavouriteLocation)?.setOnClickListener {
+
+            val bottomfragment=Favoritefragment()
+            val dao=(application as favoriteplacesapp).db.favoritedao()
+            lifecycleScope.launch {
+                val saved=dao.fetchAllfavorites()
+
+            }
+            bottomfragment.show(supportFragmentManager,"TAG")
             Toast.makeText(this@MainActivity, "Favourites", Toast.LENGTH_SHORT).show()
             slidingRootNavBuilder.closeMenu(true)
         }
@@ -650,7 +664,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
     private fun fetchPinnedData(pinnedId: String?) {
         hideShowProgressBar(showProgressbar = true)
-
+        val dao= (this@MainActivity.application as favoriteplacesapp).db.favoritedao()
         val placeFields = listOf(
             Place.Field.NAME,
             Place.Field.ADDRESS,
@@ -735,6 +749,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                 }
 
                 binding.ivPinnedSaveIcon.setOnClickListener {
+
+                    lifecycleScope.launch {
+                        dao.Insert(
+                            Favoriteentity(
+                                place.id!!,place.name?.toString(),place.address?.toString(),selectedMarkerLocation?.latitude?.toDouble(),selectedMarkerLocation?.longitude?.toDouble(),
+                        place.rating?.toString(),userRatingCount,open,closesTimings,timings,place.phoneNumber?.toString()
+                        ,place.websiteUri?.toString()
+                        )
+                        )
+                    }
                     Toast.makeText(this@MainActivity, "Save", Toast.LENGTH_SHORT).show()
                 }
 

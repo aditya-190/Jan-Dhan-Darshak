@@ -18,7 +18,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter.PlacesViewHolder
+import jan.dhan.darshak.database.Favoriteentity
+import jan.dhan.darshak.database.favoriteplacesapp
 import jan.dhan.darshak.ui.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class PlacesAdapter(
@@ -27,7 +32,7 @@ class PlacesAdapter(
 ) : RecyclerView.Adapter<PlacesViewHolder>() {
 
     var currentLocation: LatLng? = null
-
+    val dao=((mContext as MainActivity).application as favoriteplacesapp).db.favoritedao()
     inner class PlacesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val clSinglePlace: ConstraintLayout = itemView.findViewById(R.id.clSinglePlace)
         val tvResultHeading: TextView = itemView.findViewById(R.id.tvResultHeading)
@@ -50,6 +55,7 @@ class PlacesAdapter(
 
     override fun onBindViewHolder(holder: PlacesViewHolder, position: Int) {
         val place = places[position]
+        val id=place?.get("id")
         val heading = place?.get("name")
         val address = place?.get("address")
         val latitude = place?.get("latitude")?.toDouble()
@@ -91,6 +97,9 @@ class PlacesAdapter(
         }
 
         holder.ivSaveIcon.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                dao.Insert(Favoriteentity(id!!,heading,address,latitude,longitude,rating,ratingCount,open,close,timings,phoneNumber, place?.get("website")))
+            }
             Toast.makeText(mContext, "Save Button Clicked", Toast.LENGTH_SHORT).show()
         }
 
