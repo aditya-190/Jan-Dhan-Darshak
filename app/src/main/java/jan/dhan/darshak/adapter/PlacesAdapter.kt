@@ -52,6 +52,7 @@ class PlacesAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.single_location, parent, false)
         )
     }
+    //(id=ChIJW3Ewiy1hDDkRPpbaOGNiwCU, name=HDFC Bank ATM, address=HDFC Bank ATM Niwari Road, Shivpuri, Ghaziabad, latitude=28.842108, longitude=77.5767698, rating=0, ratingCount=(0), open=Open Now, close=, timings=Open Now , phoneNumber=+91 22 6846 1208, website=https://near-me.hdfcbank.com/branch-atm-locator/hdfc-bank-atm-shivpuri-banks-shivpuri-modinagar-24395/Home?utm_source=locator&utm_medium=googleplaces)
 
     override fun onBindViewHolder(holder: PlacesViewHolder, position: Int) {
         val place = places[position]

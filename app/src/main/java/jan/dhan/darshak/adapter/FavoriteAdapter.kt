@@ -5,7 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -15,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
+import jan.dhan.darshak.FavoriteBottomFragment.Favoritefragment
 import jan.dhan.darshak.R
 import jan.dhan.darshak.database.Favoriteentity
 import jan.dhan.darshak.databinding.FavoriteBottomFragmentBinding
@@ -22,9 +25,10 @@ import jan.dhan.darshak.ui.MainActivity
 
 
 class FavoriteAdapter(private val items:ArrayList<Favoriteentity>,
-private val mContext:Context):RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
+                      private val mContext: Context?
+):RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
 
-     class ViewHolder(binding: FavoriteBottomFragmentBinding):RecyclerView.ViewHolder(binding.root){
+     class ViewHolder(private val itemView: View) : RecyclerView.ViewHolder(itemView){
 
          val clSinglePlace: ConstraintLayout = itemView.findViewById(R.id.clSinglePlace)
          val tvResultHeading: TextView = itemView.findViewById(R.id.tvResultHeading)
@@ -40,26 +44,28 @@ private val mContext:Context):RecyclerView.Adapter<FavoriteAdapter.ViewHolder>()
      }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(FavoriteBottomFragmentBinding.inflate(LayoutInflater.from(parent.context),parent,false))
-
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.favorite_location, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item =items[position]
+        Log.d("dsf", "onBindViewHolder: "+items)
         holder.tvResultHeading?.text=item.name
         holder.tvAddress.text=item.address
         holder.rbRatings.rating=item.rating?.toFloat() ?:0F
         holder.tvRatingCount.text=item.ratingCount
         val open = if (item.open.toBoolean())
             "<font color=\"${
-                mContext.resources.getColor(
+                mContext?.resources?.getColor(
                     R.color.green_color,
                     mContext.theme
                 )
             }\">Open Now</font>"
         else
             "<font color=\"${
-                mContext.resources.getColor(
+                mContext?.resources?.getColor(
                     R.color.navigationSelected,
                     mContext.theme
                 )
@@ -94,7 +100,7 @@ private val mContext:Context):RecyclerView.Adapter<FavoriteAdapter.ViewHolder>()
                     Intent.EXTRA_TEXT,
                     "${item.name}\n$item.address\nhttps://www.google.co.id/maps/@$item.latitude,$item.longitude"
                 )
-                mContext.startActivity(Intent.createChooser(it, "Share using:"))
+                mContext!!.startActivity(Intent.createChooser(it, "Share using:"))
             }
         }
 
@@ -104,7 +110,7 @@ private val mContext:Context):RecyclerView.Adapter<FavoriteAdapter.ViewHolder>()
 
         holder.ivCallIcon.setOnClickListener {
             if (!item.phoneNumber.isNullOrEmpty())
-                mContext.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$item.phoneNumber")))
+                mContext!!.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$item.phoneNumber")))
             else
                 Toast.makeText(mContext, "Phone number not Provided.", Toast.LENGTH_SHORT).show()
         }
@@ -115,7 +121,7 @@ private val mContext:Context):RecyclerView.Adapter<FavoriteAdapter.ViewHolder>()
                 Uri.parse("google.navigation:q=$item.latitude,$item.longitude")
             ).also {
                 it.`package` = "com.google.android.apps.maps"
-                if (it.resolveActivity(mContext.packageManager) != null)
+                if (it.resolveActivity(mContext!!.packageManager) != null)
                     mContext.startActivity(it)
             }
         }

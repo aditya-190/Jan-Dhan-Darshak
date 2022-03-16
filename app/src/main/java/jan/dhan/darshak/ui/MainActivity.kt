@@ -565,12 +565,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
         slidingRootNavLayout.findViewById<TextView>(R.id.tvFavouriteLocation)?.setOnClickListener {
 
-            val bottomfragment=Favoritefragment()
-            val dao=(application as favoriteplacesapp).db.favoritedao()
-            lifecycleScope.launch {
-                val saved=dao.fetchAllfavorites()
+            val bottomfragment=Favoritefragment(this@MainActivity)
 
-            }
+
             bottomfragment.show(supportFragmentManager,"TAG")
             Toast.makeText(this@MainActivity, "Favourites", Toast.LENGTH_SHORT).show()
             slidingRootNavBuilder.closeMenu(true)
@@ -753,8 +750,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                     lifecycleScope.launch {
                         dao.Insert(
                             Favoriteentity(
-                                place.id!!,place.name?.toString(),place.address?.toString(),selectedMarkerLocation?.latitude?.toDouble(),selectedMarkerLocation?.longitude?.toDouble(),
-                        place.rating?.toString(),userRatingCount,open,closesTimings,timings,place.phoneNumber?.toString()
+                                pinnedId,place.name?.toString(),place.address?.toString(),selectedMarkerLocation?.latitude?.toDouble(),selectedMarkerLocation?.longitude?.toDouble(),
+                        place.rating?.toString(),place.userRatingsTotal.toString(),place.isOpen.toString(),closesTimings,timings,place.phoneNumber?.toString()
                         ,place.websiteUri?.toString()
                         )
                         )
