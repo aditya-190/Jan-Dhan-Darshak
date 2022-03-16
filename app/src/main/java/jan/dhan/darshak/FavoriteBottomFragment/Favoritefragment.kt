@@ -20,33 +20,31 @@ import kotlinx.coroutines.launch
 
 class Favoritefragment(private val mContext:Context):BottomSheetDialogFragment() {
     private var _binding: FavoriteBottomFragmentBinding? = null
-
-    // This property is only valid between onCreateView and
-// onDestroyView.
     private val binding get() = _binding!!
 
+    private var list = arrayListOf<Favoriteentity>()
+
     private val dao=(mContext.applicationContext as favoriteplacesapp).db.favoritedao()
-    private var favoriteplaceAdapter: FavoriteAdapter?=null
+    private var favoriteplaceAdapter: FavoriteAdapter?= FavoriteAdapter(list, context)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FavoriteBottomFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
-        dao.fetchAllfavorites().collect { fulllist ->
-            Log.d("dsf", "onViewCreated: "+fulllist)
-
-            if(fulllist.isNotEmpty())
-            {
-                _binding?.rvFavoriteplaces?.layoutManager=LinearLayoutManager(view.context)
-                favoriteplaceAdapter=FavoriteAdapter(fulllist as ArrayList<Favoriteentity>,view.context)
+        dao.fetchAllfavorites().collect { data ->
+            list = data as ArrayList<Favoriteentity>
+            if(list.isNotEmpty())  {
+                binding.rvFavoriteplaces.layoutManager=LinearLayoutManager(view.context)
+                favoriteplaceAdapter = FavoriteAdapter(list, context)
+                binding.rvFavoriteplaces.adapter = favoriteplaceAdapter
             }
         }
         }
