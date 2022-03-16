@@ -110,7 +110,7 @@ class FavoriteAdapter(private val items:ArrayList<Favoriteentity>,
 
         holder.ivCallIcon.setOnClickListener {
             if (!item.phoneNumber.isNullOrEmpty())
-                mContext!!.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$item.phoneNumber")))
+                mContext!!.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${item.phoneNumber}")))
             else
                 Toast.makeText(mContext, "Phone number not Provided.", Toast.LENGTH_SHORT).show()
         }
@@ -118,7 +118,7 @@ class FavoriteAdapter(private val items:ArrayList<Favoriteentity>,
         holder.ivDirectionIcon.setOnClickListener {
             Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("google.navigation:q=$item.latitude,$item.longitude")
+                Uri.parse("google.navigation:q=${item.latitude},${item.longitude}")
             ).also {
                 it.`package` = "com.google.android.apps.maps"
                 if (it.resolveActivity(mContext!!.packageManager) != null)
