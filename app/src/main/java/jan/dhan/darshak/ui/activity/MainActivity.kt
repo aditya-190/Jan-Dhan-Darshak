@@ -44,6 +44,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.PhotoMetadata
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
@@ -58,6 +59,7 @@ import jan.dhan.darshak.adapter.PlacesAdapter
 import jan.dhan.darshak.data.Location
 import jan.dhan.darshak.data.NearbyPointsApi
 import jan.dhan.darshak.databinding.ActivityMainBinding
+import jan.dhan.darshak.ui.fragments.DetailsFragment
 import jan.dhan.darshak.ui.fragments.ExplanationFragment
 import jan.dhan.darshak.ui.fragments.FormFragment
 import jan.dhan.darshak.ui.fragments.LanguageFragment
@@ -856,86 +858,118 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     private fun hideAndShowPinnedLocation() {
         if (selectedMarker != null) {
             binding.mcvPinnedContainer.visibility = View.VISIBLE
+            binding.mcvPinnedContainer.setOnClickListener {
+                val list = arrayListOf<PhotoMetadata>()
+                val placeFields = listOf(
+                    Place.Field.NAME,
+                    Place.Field.ADDRESS,
 
-            binding.bottomNavigation
-                .animate()
-                .alpha(0.0F)
-                .setDuration(500)
-                .setListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {}
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        binding.bottomNavigation.visibility = View.GONE
+                    Place.Field.PHONE_NUMBER,
+                    Place.Field.OPENING_HOURS,
+
+                    Place.Field.PHOTO_METADATAS
+                )
+
+                val request = FetchPlaceRequest.newInstance(selectedMarker?.snippet, placeFields)
+                placesClient.fetchPlace(request)
+                    .addOnSuccessListener { response: FetchPlaceResponse ->
+                        val place = response.place
+                        val metada = place.photoMetadatas
+                        if (metada == null || metada.isEmpty()) {
+                            Log.w("LOL", "No photo metadata.")
+
+
+                        }else {
+                            for (i in 0..metada.size - 1) {
+                                var photoMetadata = metada.get(i)
+
+                                list.add(photoMetadata)
+                            }
+                        }
+                        val disclaimer = DetailsFragment(list,place,selectedMarkerLocation)
+                        disclaimer.show(supportFragmentManager, "TAG")
                     }
-                })
+            }
+                binding.bottomNavigation
+                    .animate()
+                    .alpha(0.0F)
+                    .setDuration(500)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            binding.bottomNavigation.visibility = View.GONE
+                        }
+                    })
 
-            binding.mcvBottomSheetContainer
-                .animate()
-                .alpha(0.0F)
-                .setDuration(500)
-                .setListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {}
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        binding.mcvBottomSheetContainer.visibility = View.GONE
-                    }
-                })
+                binding.mcvBottomSheetContainer
+                    .animate()
+                    .alpha(0.0F)
+                    .setDuration(500)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            binding.mcvBottomSheetContainer.visibility = View.GONE
+                        }
+                    })
 
-            binding.mcvCurrentContainer
-                .animate()
-                .alpha(0.0F)
-                .setDuration(500)
-                .setListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {}
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        binding.mcvCurrentContainer.visibility = View.GONE
-                    }
-                })
+                binding.mcvCurrentContainer
+                    .animate()
+                    .alpha(0.0F)
+                    .setDuration(500)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            binding.mcvCurrentContainer.visibility = View.GONE
+                        }
+                    })
 
-            binding.mcvDirectionContainer
-                .animate()
-                .alpha(0.0F)
-                .setDuration(500)
-                .setListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {}
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        binding.mcvDirectionContainer.visibility = View.GONE
-                    }
-                })
+                binding.mcvDirectionContainer
+                    .animate()
+                    .alpha(0.0F)
+                    .setDuration(500)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            binding.mcvDirectionContainer.visibility = View.GONE
+                        }
+                    })
 
-            binding.mcvLayerContainer
-                .animate()
-                .alpha(0.0F)
-                .setDuration(500)
-                .setListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {}
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        binding.mcvLayerContainer.visibility = View.GONE
-                    }
-                })
+                binding.mcvLayerContainer
+                    .animate()
+                    .alpha(0.0F)
+                    .setDuration(500)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            binding.mcvLayerContainer.visibility = View.GONE
+                        }
+                    })
 
-            binding.mcvNorthFacingContainer
-                .animate()
-                .alpha(0.0F)
-                .setDuration(500)
-                .setListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {}
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        binding.mcvNorthFacingContainer.visibility = View.GONE
-                    }
-                })
+                binding.mcvNorthFacingContainer
+                    .animate()
+                    .alpha(0.0F)
+                    .setDuration(500)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            binding.mcvNorthFacingContainer.visibility = View.GONE
+                        }
+                    })
 
-        } else {
+            }
+        else {
             binding.mcvPinnedContainer.visibility = View.GONE
 
             binding.bottomNavigation
