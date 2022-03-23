@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "203289496133",
+    "project_id": "jan-dhan-darshak-9a650",
+    "storage_bucket": "jan-dhan-darshak-9a650.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203289496133:android:6e77d751b9401e1615f12c",
+        "android_client_info": {
+          "package_name": "jan.dhan.darshak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203289496133-sljm479s1emkuokjgvr0p9om69dat07m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGVF_wPkY8pyv4xljxZSj0wbMNbgO07jM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203289496133-sljm479s1emkuokjgvr0p9om69dat07m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
