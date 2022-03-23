@@ -53,6 +53,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
+import com.google.maps.android.SphericalUtil
 import dagger.hilt.android.AndroidEntryPoint
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter
@@ -717,6 +718,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             true
         }
         mGoogleMap.setOnMapClickListener {
+            binding.mcvReviewContainer.visibility=View.GONE
             if (selectedMarker != null)
                 selectedMarker?.setIcon(bitmapFromVector(R.drawable.icon_marker))
 
@@ -748,10 +750,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             Place.Field.WEBSITE_URI
         )
         val request = FetchPlaceRequest.newInstance(pinnedId!!, placeFields)
-
+        if(SphericalUtil.computeDistanceBetween(currentLocation, selectedMarkerLocation)<=2000&&selectedCategory=="atm")
+        {
+            binding.mcvReviewContainer.visibility=View.VISIBLE
+        }
+        else{
+            binding.mcvReviewContainer.visibility=View.GONE
+        }
         placesClient.fetchPlace(request)
             .addOnSuccessListener { response: FetchPlaceResponse ->
                 val place = response.place
+
                 binding.tvPinnedHeading.text = place.name?.toString()
                 binding.tvPinnedAddress.text = place.address?.toString()
                 binding.rbPinnedRatings.rating = place.rating?.toString()?.toFloat() ?: 0F
@@ -795,7 +804,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                 } else {
                     binding.tvPinnedTimings.text = compatTimings
                 }
-
                 binding.ivPinnedDirectionIcon.setOnClickListener {
                     Intent(
                         Intent.ACTION_VIEW,
