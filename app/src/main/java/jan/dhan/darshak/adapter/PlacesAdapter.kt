@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.speech.tts.TextToSpeech
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -20,11 +21,13 @@ import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter.PlacesViewHolder
 import jan.dhan.darshak.data.Location
 import jan.dhan.darshak.ui.activity.MainActivity
+import jan.dhan.darshak.utils.Common.sayOutLoud
 
 
 class PlacesAdapter(
     private val mContext: Context,
     private val places: ArrayList<HashMap<String?, String?>?>,
+    private val textToSpeech: TextToSpeech,
     private var itemClickListener: ((location: Location) -> Unit)? = null
 ) : RecyclerView.Adapter<PlacesViewHolder>() {
 
@@ -110,15 +113,14 @@ class PlacesAdapter(
                     rating = place?.get("rating"),
                     ratingCount = place?.get("ratingCount"),
                     phoneNumber = place?.get("phoneNumber"),
-                    website = place?.get("website"),
-                    timeStamp = System.currentTimeMillis()
+                    website = place?.get("website")
                 )
             )
             Toast.makeText(mContext, "Saved", Toast.LENGTH_SHORT).show()
         }
 
         holder.ivSpeak.setOnClickListener {
-            (mContext as MainActivity).sayOutLoud("$heading")
+            sayOutLoud(textToSpeech, "$heading")
         }
 
         holder.ivShareIcon.setOnClickListener {

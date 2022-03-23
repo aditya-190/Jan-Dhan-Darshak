@@ -1,11 +1,11 @@
 package jan.dhan.darshak.ui.fragments
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -15,9 +15,10 @@ import jan.dhan.darshak.adapter.FavouriteAdapter
 import jan.dhan.darshak.data.Faq
 import jan.dhan.darshak.databinding.ExplanationSheetsBinding
 import jan.dhan.darshak.ui.viewmodels.MainViewModel
+import jan.dhan.darshak.utils.Common.sayOutLoud
 
 
-class ExplanationFragment : BottomSheetDialogFragment() {
+class ExplanationFragment(private val textToSpeech: TextToSpeech) : BottomSheetDialogFragment() {
 
     private var _binding: ExplanationSheetsBinding? = null
     private val binding get() = _binding!!
@@ -100,7 +101,9 @@ class ExplanationFragment : BottomSheetDialogFragment() {
                 )
             }
         } else if (recyclerView && heading == getString(R.string.favourite_locations)) {
-            val favouriteAdapter = FavouriteAdapter(arrayListOf())
+            val favouriteAdapter = FavouriteAdapter(arrayListOf()) { message ->
+                sayOutLoud(textToSpeech, message.toString())
+            }
 
             binding.rvFaqs.also {
                 it.layoutManager =

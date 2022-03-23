@@ -22,6 +22,7 @@ import jan.dhan.darshak.ui.activity.MainActivity
 
 class FavouriteAdapter(
     private var places: ArrayList<Location>,
+    private var itemClickListener: ((message: String?) -> Unit)
 ) : RecyclerView.Adapter<FavouriteAdapter.FavouriteViewHolder>() {
 
     inner class FavouriteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -93,7 +94,7 @@ class FavouriteAdapter(
         }
 
         holder.ivSpeak.setOnClickListener {
-            (holder.itemView.context as MainActivity).sayOutLoud("$heading")
+            itemClickListener(heading)
         }
 
         holder.ivShareIcon.setOnClickListener {

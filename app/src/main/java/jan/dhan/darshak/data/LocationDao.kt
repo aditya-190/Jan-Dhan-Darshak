@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocationDao {
-    @Query("SELECT * FROM location_table ORDER BY timeStamp DESC")
+    @Query("SELECT * FROM location_table")
     fun getLocations(): Flow<List<Location>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

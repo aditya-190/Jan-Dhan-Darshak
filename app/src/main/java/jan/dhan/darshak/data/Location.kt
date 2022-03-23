@@ -15,6 +15,5 @@ data class Location(
     val rating: String?,
     val ratingCount: String?,
     val phoneNumber: String?,
-    val website: String?,
-    val timeStamp: Long
+    val website: String?
 )
