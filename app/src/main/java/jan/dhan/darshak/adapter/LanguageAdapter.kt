@@ -12,7 +12,7 @@ import jan.dhan.darshak.data.Language
 
 class LanguageAdapter(
     private val language: ArrayList<Language>,
-    private var itemClickListener: ((language: Language) -> Unit)
+    private var itemClickListener: ((languageId: String) -> Unit)
 ) : RecyclerView.Adapter<LanguageAdapter.LanguageViewHolder>() {
 
     inner class LanguageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,7 +36,7 @@ class LanguageAdapter(
         holder.tvLanguageInEnglish.text = singleLanguage.languageNameInEnglish
 
         holder.clSingleLanguage.setOnClickListener {
-            itemClickListener(singleLanguage)
+            itemClickListener(singleLanguage.languageId)
         }
     }
 

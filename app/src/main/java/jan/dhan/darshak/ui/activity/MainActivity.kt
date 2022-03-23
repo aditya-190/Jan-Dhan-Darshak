@@ -5,6 +5,7 @@ import android.animation.Animator
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
@@ -54,13 +55,13 @@ import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.AndroidEntryPoint
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter
-import jan.dhan.darshak.databinding.ActivityMainBinding
 import jan.dhan.darshak.data.Location
 import jan.dhan.darshak.data.NearbyPointsApi
-import jan.dhan.darshak.ui.viewmodels.MainViewModel
+import jan.dhan.darshak.databinding.ActivityMainBinding
 import jan.dhan.darshak.ui.fragments.ExplanationFragment
 import jan.dhan.darshak.ui.fragments.FormFragment
 import jan.dhan.darshak.ui.fragments.LanguageFragment
+import jan.dhan.darshak.ui.viewmodels.MainViewModel
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -98,7 +99,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     private lateinit var placesAdapter: PlacesAdapter
     private var textToSpeech: TextToSpeech? = null
     private val explanationFragment = ExplanationFragment()
-    private val languageFragment = LanguageFragment()
     private val formFragment = FormFragment()
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -115,6 +115,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
+
+        getLanguage()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -128,7 +131,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     }
 
     private fun initialise() {
-        currentLanguage = Locale.getDefault().language
         apiKey = getString(R.string.maps_api_key)
 
         slidingRootNavBuilder = SlidingRootNavBuilder(this)
@@ -638,12 +640,39 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
         slidingRootNavLayout.findViewById<TextView>(R.id.tvChangeLanguage)?.setOnClickListener {
             slidingRootNavBuilder.closeMenu(true)
+            val languageFragment = LanguageFragment { languageId ->
+                updateLanguage(languageId, false)
+            }
             languageFragment.show(supportFragmentManager, "change language")
         }
 
         slidingRootNavLayout.findViewById<ImageView>(R.id.ivCloseButton)?.setOnClickListener {
             slidingRootNavBuilder.closeMenu(true)
         }
+    }
+
+    private fun updateLanguage(languageId: String, firstTime: Boolean) {
+        val locale = Locale(languageId)
+        Locale.setDefault(locale)
+        val configuration: Configuration = this@MainActivity.resources.configuration
+        configuration.setLocale(locale)
+        baseContext.resources.updateConfiguration(configuration, baseContext.resources.displayMetrics)
+
+        val editor = getSharedPreferences("settings", MODE_PRIVATE).edit()
+        editor.putString("language", currentLanguage)
+        editor.apply()
+
+        if (!firstTime) {
+            val intent = intent
+            finish()
+            startActivity(intent)
+        }
+    }
+
+    private fun getLanguage() {
+        val sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE)
+        currentLanguage = sharedPreferences.getString("language", "en").toString()
+        updateLanguage(currentLanguage, true)
     }
 
     private fun bitmapFromVector(vectorResId: Int): BitmapDescriptor {

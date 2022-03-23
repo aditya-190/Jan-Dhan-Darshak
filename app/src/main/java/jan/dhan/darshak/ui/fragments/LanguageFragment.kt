@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -13,7 +12,9 @@ import jan.dhan.darshak.data.Language
 import jan.dhan.darshak.databinding.LanguageSheetBinding
 
 
-class LanguageFragment : BottomSheetDialogFragment() {
+class LanguageFragment(
+    private var itemClickListener: ((languageId: String) -> Unit)
+) : BottomSheetDialogFragment() {
 
     private var _binding: LanguageSheetBinding? = null
     private val binding get() = _binding!!
@@ -34,73 +35,63 @@ class LanguageFragment : BottomSheetDialogFragment() {
             Language(
                 languageId = "en",
                 languageName = "English",
-                languageNameInEnglish = "English",
-                selected = true
+                languageNameInEnglish = "English"
             ),
             Language(
                 languageId = "hi",
                 languageName = "हिंदी",
                 languageNameInEnglish = "Hindi",
-                selected = false
             ),
             Language(
                 languageId = "gu",
                 languageName = "ગુજરાતી",
                 languageNameInEnglish = "Gujarati",
-                selected = false
             ),
             Language(
                 languageId = "ta",
                 languageName = "தமிழ்",
                 languageNameInEnglish = "Tamil",
-                selected = false
             ),
             Language(
                 languageId = "te",
                 languageName = "తెలుగు",
                 languageNameInEnglish = "Telegu",
-                selected = false
             ),
             Language(
                 languageId = "kn",
                 languageName = "ಕನ್ನಡ",
                 languageNameInEnglish = "Kannada",
-                selected = false
             ),
             Language(
                 languageId = "ml",
                 languageName = "മലയാളം",
                 languageNameInEnglish = "Malayalam",
-                selected = false
             ),
             Language(
                 languageId = "mr",
                 languageName = "मराठी",
-                languageNameInEnglish = "Marathi",
-                selected = false
+                languageNameInEnglish = "Marathi"
             ),
             Language(
                 languageId = "ne",
                 languageName = "नेपाली",
-                languageNameInEnglish = "Nepali",
-                selected = false
+                languageNameInEnglish = "Nepali"
             ),
             Language(
                 languageId = "pa",
                 languageName = "ਪੰਜਾਬੀ",
-                languageNameInEnglish = "Punjabi",
-                selected = false
+                languageNameInEnglish = "Punjabi"
             ),
             Language(
                 languageId = "ur",
                 languageName = "اردو",
-                languageNameInEnglish = "Urdu",
-                selected = false
+                languageNameInEnglish = "Urdu"
             )
         )
 
-        val languageAdapter = LanguageAdapter(languageList) {
-            Toast.makeText(context, "${it.languageId}", Toast.LENGTH_SHORT).show()
+        val languageAdapter = LanguageAdapter(languageList) { languageId ->
+            dismiss()
+            itemClickListener(languageId)
         }
 
         binding.rvLanguages.also {
