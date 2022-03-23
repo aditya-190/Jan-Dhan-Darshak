@@ -3,11 +3,14 @@ package jan.dhan.darshak.ui.activity
 import android.Manifest
 import android.animation.Animator
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,14 +20,18 @@ import android.text.Editable
 import android.text.Html
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.view.Window
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -69,6 +76,7 @@ import jan.dhan.darshak.utils.Common.sayOutLoud
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -652,6 +660,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
         slidingRootNavLayout.findViewById<ImageView>(R.id.ivCloseButton)?.setOnClickListener {
             slidingRootNavBuilder.closeMenu(true)
+        }
+        binding.ivReview.setOnClickListener {
+          val dialog=Dialog(this)
+            dialog.setContentView(R.layout.review_popup)
+            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window!!.setLayout(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+            dialog.findViewById<TextView>(R.id.tvYes).setOnClickListener {
+
+            }
+            dialog.show()
         }
     }
 
