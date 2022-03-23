@@ -35,4 +35,8 @@
     <string name="send_suggestion">ಸಲಹೆಯನ್ನು ಕಳುಹಿಸಿ</string>
     <string name="send_feedback">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</string>
     <string name="change_language">ಭಾಷೆ ಬದಲಿಸಿ</string>
+    <string name="change">Change</string>
+    <string name="language">language</string>
+    <string name="icon_select">icon_select</string>
+    <string name="save">Save</string>
 </resources>

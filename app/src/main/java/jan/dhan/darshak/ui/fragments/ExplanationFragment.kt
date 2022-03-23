@@ -1,27 +1,35 @@
 package jan.dhan.darshak.ui.fragments
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.FaqAdapter
 import jan.dhan.darshak.adapter.FavouriteAdapter
 import jan.dhan.darshak.data.Faq
+import jan.dhan.darshak.data.Location
 import jan.dhan.darshak.databinding.ExplanationSheetsBinding
 import jan.dhan.darshak.ui.viewmodels.MainViewModel
+import jan.dhan.darshak.utils.Common.sayOutLoud
+import jan.dhan.darshak.utils.SwipeGesture
 
 
-class ExplanationFragment : BottomSheetDialogFragment() {
+class ExplanationFragment(private val textToSpeech: TextToSpeech) : BottomSheetDialogFragment() {
 
     private var _binding: ExplanationSheetsBinding? = null
     private val binding get() = _binding!!
     private val mainViewModel: MainViewModel by activityViewModels()
+    private lateinit var allLocations: ArrayList<Location>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -100,7 +108,9 @@ class ExplanationFragment : BottomSheetDialogFragment() {
                 )
             }
         } else if (recyclerView && heading == getString(R.string.favourite_locations)) {
-            val favouriteAdapter = FavouriteAdapter(arrayListOf())
+            val favouriteAdapter = FavouriteAdapter(arrayListOf()) { message ->
+                sayOutLoud(textToSpeech, message.toString())
+            }
 
             binding.rvFaqs.also {
                 it.layoutManager =
@@ -109,13 +119,58 @@ class ExplanationFragment : BottomSheetDialogFragment() {
                 it.addItemDecoration(
                     DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
                 )
+
+                val swipeGesture = object : SwipeGesture(requireContext()) {
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        val position = viewHolder.adapterPosition
+                        val current = allLocations[position]
+                        var clickedUndo = false
+
+                        when (direction) {
+                            ItemTouchHelper.LEFT -> {
+                                favouriteAdapter.deleteLocation(position)
+
+                                Snackbar.make(
+                                    binding.rvFaqs.rootView,
+                                    "Deleted",
+                                    Snackbar.LENGTH_LONG
+                                ).setAction("Undo") {
+                                    favouriteAdapter.insertLocation(position, current)
+                                    clickedUndo = true
+                                }.addCallback(object :
+                                    BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                                    override fun onShown(transientBottomBar: Snackbar?) {
+                                        super.onShown(transientBottomBar)
+                                    }
+
+                                    override fun onDismissed(
+                                        transientBottomBar: Snackbar?,
+                                        event: Int
+                                    ) {
+                                        if (!clickedUndo) {
+                                            mainViewModel.deleteLocation(current)
+                                        }
+                                        super.onDismissed(transientBottomBar, event)
+                                    }
+                                }).show()
+                            }
+                        }
+                    }
+                }
+
+                val touchHelper = ItemTouchHelper(swipeGesture)
+                touchHelper.attachToRecyclerView(binding.rvFaqs)
             }
 
             mainViewModel.allLocation.observe(this) { locations ->
                 if (locations.isEmpty()) {
+                    allLocations = arrayListOf()
+
                     binding.ivNoDataIcon.visibility = View.VISIBLE
                     binding.rvFaqs.visibility = View.GONE
                 } else {
+                    allLocations = locations as ArrayList
+
                     binding.ivNoDataIcon.visibility = View.GONE
                     binding.rvFaqs.visibility = View.VISIBLE
                 }

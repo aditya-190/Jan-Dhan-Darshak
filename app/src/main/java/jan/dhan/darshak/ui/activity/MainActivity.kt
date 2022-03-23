@@ -64,6 +64,7 @@ import jan.dhan.darshak.ui.fragments.ExplanationFragment
 import jan.dhan.darshak.ui.fragments.FormFragment
 import jan.dhan.darshak.ui.fragments.LanguageFragment
 import jan.dhan.darshak.ui.viewmodels.MainViewModel
+import jan.dhan.darshak.utils.Common.sayOutLoud
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -100,7 +101,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     private var placesList: ArrayList<HashMap<String?, String?>?> = arrayListOf()
     private lateinit var placesAdapter: PlacesAdapter
     private var textToSpeech: TextToSpeech? = null
-    private val explanationFragment = ExplanationFragment()
+    private lateinit var explanationFragment: ExplanationFragment
     private val formFragment = FormFragment()
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -172,7 +173,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                 }
             }
 
-        placesAdapter = PlacesAdapter(this@MainActivity, placesList) { location ->
+        placesAdapter = PlacesAdapter(this@MainActivity, placesList, textToSpeech!!) { location ->
             mainViewModel.insertLocation(location)
         }
 
@@ -661,7 +662,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         baseContext.resources.updateConfiguration(configuration, baseContext.resources.displayMetrics)
 
         val editor = getSharedPreferences("settings", MODE_PRIVATE).edit()
-        editor.putString("language", currentLanguage)
+        editor.putString("language", locale.language)
         editor.apply()
 
         if (!firstTime) {
@@ -836,15 +837,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                             rating = place.rating?.toString(),
                             ratingCount = place.userRatingsTotal?.toString(),
                             phoneNumber = place.phoneNumber?.toString(),
-                            website = place.websiteUri?.toString(),
-                            timeStamp = System.currentTimeMillis()
+                            website = place.websiteUri?.toString()
                         )
                     )
                     Toast.makeText(this@MainActivity, "Saved", Toast.LENGTH_SHORT).show()
                 }
 
                 binding.ivPinnedSpeak.setOnClickListener {
-                    sayOutLoud("${binding.tvPinnedHeading.text}")
+                    sayOutLoud(textToSpeech!!, "${binding.tvPinnedHeading.text}")
                 }
 
                 hideAndShowPinnedLocation()
@@ -1352,11 +1352,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             textToSpeech!!.language = Locale.getDefault()
+            explanationFragment = ExplanationFragment(textToSpeech!!)
         }
-    }
-
-    fun sayOutLoud(message: String) {
-        textToSpeech!!.speak(message, TextToSpeech.QUEUE_FLUSH, null, "")
     }
 
     override fun onDestroy() {
