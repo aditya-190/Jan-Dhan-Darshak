@@ -62,18 +62,17 @@ Our aim is to upgrade this app making it more feasible by providing better funct
 3. Android App - Android based application
 
 # TEAM LEADER : 
- <td align="center"><a href="https://github.com/aditya-190"><img src="https://user-images.githubusercontent.com/66888130/159639946-8d32091d-a65c-4643-affb-908f428a884f.jpg" width="100px;" alt=""/><br /><sub><b>Aditya Bhardwaj</b></sub></a><br /><a href="#translation-robertlluberes" title="Translation"</a></td>
-A git repo for our Smart India Hackathon project. Upgradation of Government App Jan-Dhan-Dashak . 
+ <td align="center"><a href="https://github.com/aditya-190"><img src="https://user-images.githubusercontent.com/66888130/159639946-8d32091d-a65c-4643-affb-908f428a884f.jpg" width="100px;" alt=""/><br /><sub><b>Aditya Bhardwaj</b></sub></a><br /></td>
 
 # Team:-
 <table>
-<td align="center"><a href="https://github.com/Deepanshu0609"><img src="https://user-images.githubusercontent.com/66888130/159643702-50363139-2c12-44c5-a374-b41387089315.jpeg" width="100px;" alt=""/><br /><sub><b>Deepanshu Tyagi</b></sub></a><br /><a href="#translation-robertlluberes" title="Translation"</a></td>
+<td align="center"><a href="https://github.com/Deepanshu0609"><img src="https://user-images.githubusercontent.com/66888130/159643702-50363139-2c12-44c5-a374-b41387089315.jpeg" width="100px;" alt=""/><br /><sub><b>Deepanshu Tyagi</b></td>
 
-<td align="center"><a href="https://github.com/Hitaishi1609"><img src="https://user-images.githubusercontent.com/66888130/159645615-a717b9f4-4cc8-41ae-8433-d0cc7c281ba4.jpeg" width="100px;" alt=""/><br /><sub><b>Hitaishi Dagga</b></sub></a><br /><a href="#translation-robertlluberes" title="Translation"</a></td>
+<td align="center"><a href="https://github.com/Hitaishi1609"><img src="https://user-images.githubusercontent.com/66888130/159645615-a717b9f4-4cc8-41ae-8433-d0cc7c281ba4.jpeg" width="100px;" alt=""/><br /><sub><b>Hitaishi Dagga</b></sub></a><br /></td>
 
-<td align="center"><a href="https://github.com/jaskaran5109"><img src="https://user-images.githubusercontent.com/66888130/159644384-e3292615-f779-48ec-9ad8-3a5a77cdcfcf.jpg" width="100px;" alt=""/><br /><sub><b>Jaskaran Singh</b></sub></a><br /><a href="#translation-robertlluberes" title="Translation"</a></td>
+<td align="center"><a href="https://github.com/jaskaran5109"><img src="https://user-images.githubusercontent.com/66888130/159644384-e3292615-f779-48ec-9ad8-3a5a77cdcfcf.jpg" width="100px;" alt=""/><br /><sub><b>Jaskaran Singh</b></sub></a><br /></td>
 
-<td align="center"><a href="https://github.com/Shozabg"><img src="https://user-images.githubusercontent.com/66888130/159645367-3b76d1a2-bdf3-434a-b802-12607f1c376f.jpeg" width="100px;" alt=""/><br /><sub><b>Shozab Zaidi</b></sub></a><br /><a href="#translation-robertlluberes" title="Translation"</a></td>
+<td align="center"><a href="https://github.com/Shozabg"><img src="https://user-images.githubusercontent.com/66888130/159645367-3b76d1a2-bdf3-434a-b802-12607f1c376f.jpeg" width="100px;" alt=""/><br /><sub><b>Shozab Zaidi</b></sub></a><br /></td>
 
-<td align="center"><a href="https://github.com/nimesh9528"><img src="https://user-images.githubusercontent.com/66888130/159644875-9e15f87c-2490-4c5e-a1fe-6424a8496bf9.jpg" width="100px;" alt=""/><br /><sub><b>Nimesh Sharma</b></sub></a><br /><a href="#translation-robertlluberes" title="Translation"</a></td>
+<td align="center"><a href="https://github.com/nimesh9528"><img src="https://user-images.githubusercontent.com/66888130/159644875-9e15f87c-2490-4c5e-a1fe-6424a8496bf9.jpg" width="100px;" alt=""/><br /><sub><b>Nimesh Sharma</b></sub></a><br /></td>
 </table>
