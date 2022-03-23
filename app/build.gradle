@@ -41,6 +41,7 @@ android {
 dependencies {
 
     // App Essentials.
+
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
@@ -93,4 +94,6 @@ dependencies {
 
     // Swipe to Delete Decoration
     implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
+
+    implementation 'com.google.maps.android:android-maps-utils:0.5+'
 }
