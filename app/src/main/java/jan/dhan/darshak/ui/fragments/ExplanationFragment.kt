@@ -11,10 +11,13 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.FaqAdapter
 import jan.dhan.darshak.adapter.FavouriteAdapter
 import jan.dhan.darshak.data.Faq
+import jan.dhan.darshak.data.Location
 import jan.dhan.darshak.databinding.ExplanationSheetsBinding
 import jan.dhan.darshak.ui.viewmodels.MainViewModel
 import jan.dhan.darshak.utils.Common.sayOutLoud
@@ -26,6 +29,7 @@ class ExplanationFragment(private val textToSpeech: TextToSpeech) : BottomSheetD
     private var _binding: ExplanationSheetsBinding? = null
     private val binding get() = _binding!!
     private val mainViewModel: MainViewModel by activityViewModels()
+    private lateinit var allLocations: ArrayList<Location>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -118,9 +122,37 @@ class ExplanationFragment(private val textToSpeech: TextToSpeech) : BottomSheetD
 
                 val swipeGesture = object : SwipeGesture(requireContext()) {
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        val position = viewHolder.adapterPosition
+                        val current = allLocations[position]
+                        var clickedUndo = false
+
                         when (direction) {
                             ItemTouchHelper.LEFT -> {
-                                favouriteAdapter.deleteLocation(viewHolder.adapterPosition)
+                                favouriteAdapter.deleteLocation(position)
+
+                                Snackbar.make(
+                                    binding.rvFaqs.rootView,
+                                    "Deleted",
+                                    Snackbar.LENGTH_LONG
+                                ).setAction("Undo") {
+                                    favouriteAdapter.insertLocation(position, current)
+                                    clickedUndo = true
+                                }.addCallback(object :
+                                    BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                                    override fun onShown(transientBottomBar: Snackbar?) {
+                                        super.onShown(transientBottomBar)
+                                    }
+
+                                    override fun onDismissed(
+                                        transientBottomBar: Snackbar?,
+                                        event: Int
+                                    ) {
+                                        if (!clickedUndo) {
+                                            mainViewModel.deleteLocation(current)
+                                        }
+                                        super.onDismissed(transientBottomBar, event)
+                                    }
+                                }).show()
                             }
                         }
                     }
@@ -132,9 +164,13 @@ class ExplanationFragment(private val textToSpeech: TextToSpeech) : BottomSheetD
 
             mainViewModel.allLocation.observe(this) { locations ->
                 if (locations.isEmpty()) {
+                    allLocations = arrayListOf()
+
                     binding.ivNoDataIcon.visibility = View.VISIBLE
                     binding.rvFaqs.visibility = View.GONE
                 } else {
+                    allLocations = locations as ArrayList
+
                     binding.ivNoDataIcon.visibility = View.GONE
                     binding.rvFaqs.visibility = View.VISIBLE
                 }

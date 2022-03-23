@@ -10,7 +10,7 @@ import jan.dhan.darshak.R
 
 abstract class SwipeGesture(mContext: Context): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
-    private val deleteColor = ContextCompat.getColor(mContext, R.color.button_color)
+    private val deleteColor = ContextCompat.getColor(mContext, R.color.navigationSelected)
     private val deleteIcon = R.drawable.icon_delete
 
     override fun onMove(
