@@ -65,4 +65,12 @@
     <string name="change">Change</string>
     <string name="language">language</string>
     <string name="save">Save</string>
+    <string name="cash_available">Cash Available ?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="crowd_strength">Crowd Strength ?</string>
+    <string name="_5">5+</string>
+    <string name="_10">10+</string>
+    <string name="_15">15+</string>
+    <string name="review">Review</string>
 </resources>

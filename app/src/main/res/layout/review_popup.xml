@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="36dp"
+    android:elevation="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvCashAvailable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center_horizontal"
+            android:text="@string/cash_available"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_round"
+            android:backgroundTint="@color/blue_color"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="8dp"
+            android:text="@string/yes"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toStartOf="@id/tvNo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCashAvailable" />
+
+        <TextView
+            android:id="@+id/tvNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_round"
+            android:backgroundTint="@color/marker_color_selected"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="8dp"
+            android:text="@string/no"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvYes"
+            app:layout_constraintTop_toBottomOf="@id/tvCashAvailable" />
+
+        <TextView
+            android:id="@+id/tvCrowdStrength"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center_horizontal"
+            android:text="@string/crowd_strength"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvYes" />
+
+        <TextView
+            android:id="@+id/tvFive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_stroke_round"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/_5"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toStartOf="@id/tvTen"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCrowdStrength" />
+
+        <TextView
+            android:id="@+id/tvTen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_stroke_round"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/_10"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toStartOf="@id/tvFifteen"
+            app:layout_constraintStart_toEndOf="@id/tvFive"
+            app:layout_constraintTop_toTopOf="@id/tvFive" />
+
+        <TextView
+            android:id="@+id/tvFifteen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_stroke_round"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/_15"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvTen"
+            app:layout_constraintTop_toTopOf="@id/tvFive" />
+
+        <TextView
+            android:id="@+id/tvReviewButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/bg_round"
+            android:backgroundTint="@color/blue_color"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:text="@string/review"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvFive" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
