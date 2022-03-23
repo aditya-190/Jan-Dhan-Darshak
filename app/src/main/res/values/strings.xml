@@ -25,6 +25,7 @@
     <string name="sample_number" translatable="false">+91 123456789</string>
     <string name="sample_bank" translatable="false">Axis Bank</string>
     <string name="sample_suggestion" translatable="false">Your suggestion goes here…</string>
+    <string name="icon_select" translatable="false">icon_select</string>
 
     <string name="app_name">Jan Dhan Darshak</string>
     <string name="atm">ATM</string>
@@ -63,6 +64,5 @@
     <string name="change_language">Change Language</string>
     <string name="change">Change</string>
     <string name="language">language</string>
-    <string name="icon_select">icon_select</string>
     <string name="save">Save</string>
 </resources>

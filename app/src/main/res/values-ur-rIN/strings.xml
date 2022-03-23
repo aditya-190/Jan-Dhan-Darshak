@@ -27,7 +27,7 @@
     <string name="disclaimer_text">موبائل ایپلیکیشن میں موجود معلومات مختلف شیڈولڈ کمرشل بینکوں کے ذریعہ فراہم کی جاتی ہیں اور ان کی دیکھ بھال کی جاتی ہے۔ کسی بھی ڈیٹا کی درستگی یا کرنسی کے بارے میں کوئی گارنٹی نہیں دی گئی ہے۔ اس لیے، کسی بھی صورت میں محکمہ مالیاتی خدمات یا اس کے اجزاء کسی خاص، بالواسطہ یا نتیجہ خیز نقصانات یا کسی بھی نقصان کے لیے ذمہ دار نہیں ہوں گے جو استعمال، ڈیٹا، یا منافع کے نقصان کے نتیجے میں ہوں، چاہے وہ رابطے، غفلت، یا دیگر کارروائی میں ہو۔ ، یہاں فراہم کردہ معلومات کے استعمال سے پیدا ہونے والی یا اس کے سلسلے میں۔ ویب سائٹ کو بینکنگ انفراسٹرکچر کی ثانوی نمائندگی کے طور پر ڈیزائن کیا گیا ہے، اور اس کی تعمیل طے شدہ کمرشل بینکوں سے کی گئی ہے جو اس عوامی معلومات کے بنیادی ذرائع ہیں۔ اس ویب سائٹ کے صارفین کو مطلع کیا جاتا ہے کہ یہاں پیش کی گئی معلومات کی تصدیق کے لیے ان بنیادی ذرائع سے رجوع کیا جانا چاہیے۔ اور محکمہ مالیاتی خدمات یا اس کے اجزاء اور سافٹ ویئر ڈویلپر، NIC، اس ویب سائٹ پر موجود معلومات کی کوئی قانونی ذمہ داری قبول نہیں کرتے ہیں۔</string>
     <string name="closed">بند</string>
     <string name="closes">بند کرتا ہے۔</string>
-    <string name="name">NAME</string>
+    <string name="name">نام</string>
     <string name="bank_name">بینک کا نام</string>
     <string name="email_id">ای میل کا پتہ</string>
     <string name="Suggestion">مشورہ</string>
@@ -35,8 +35,7 @@
     <string name="send_suggestion">تجویز بھیجیں۔</string>
     <string name="send_feedback">رائے بھیجیں</string>
     <string name="change_language">زبان تبدیل کریں</string>
-    <string name="change">Change</string>
-    <string name="language">language</string>
-    <string name="icon_select">icon_select</string>
-    <string name="save">Save</string>
+    <string name="change">تبدیلی</string>
+    <string name="language">زبان</string>
+    <string name="save">محفوظ کریں</string>
 </resources>

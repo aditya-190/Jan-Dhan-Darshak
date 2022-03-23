@@ -35,8 +35,7 @@
     <string name="send_suggestion">सुझाव भेजें</string>
     <string name="send_feedback">प्रतिक्रिया भेजें</string>
     <string name="change_language">भाषा बदलें</string>
-    <string name="change">Change</string>
-    <string name="language">language</string>
-    <string name="icon_select">icon_select</string>
-    <string name="save">Save</string>
+    <string name="change">परिवर्तन</string>
+    <string name="language">भाषा</string>
+    <string name="save">सहेजें</string>
 </resources>
