@@ -660,7 +660,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         baseContext.resources.updateConfiguration(configuration, baseContext.resources.displayMetrics)
 
         val editor = getSharedPreferences("settings", MODE_PRIVATE).edit()
-        editor.putString("language", currentLanguage)
+        editor.putString("language", locale.language)
         editor.apply()
 
         if (!firstTime) {
