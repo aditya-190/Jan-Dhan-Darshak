@@ -35,4 +35,8 @@
     <string name="send_suggestion">सूचना पाठवा</string>
     <string name="send_feedback">अभिप्राय पाठवा</string>
     <string name="change_language">भाषा बदला</string>
+    <string name="change">Change</string>
+    <string name="language">language</string>
+    <string name="icon_select">icon_select</string>
+    <string name="save">Save</string>
 </resources>
