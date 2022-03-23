@@ -135,4 +135,14 @@ class FavouriteAdapter(
         places = locations as ArrayList
         notifyDataSetChanged()
     }
+
+    fun deleteLocation(position: Int) {
+        places.removeAt(position)
+        notifyDataSetChanged()
+    }
+
+    fun insertLocation(position: Int, current: Location) {
+        places.add(position, current)
+        notifyDataSetChanged()
+    }
 }

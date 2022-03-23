@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.FaqAdapter
@@ -16,6 +18,7 @@ import jan.dhan.darshak.data.Faq
 import jan.dhan.darshak.databinding.ExplanationSheetsBinding
 import jan.dhan.darshak.ui.viewmodels.MainViewModel
 import jan.dhan.darshak.utils.Common.sayOutLoud
+import jan.dhan.darshak.utils.SwipeGesture
 
 
 class ExplanationFragment(private val textToSpeech: TextToSpeech) : BottomSheetDialogFragment() {
@@ -112,6 +115,19 @@ class ExplanationFragment(private val textToSpeech: TextToSpeech) : BottomSheetD
                 it.addItemDecoration(
                     DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
                 )
+
+                val swipeGesture = object : SwipeGesture(requireContext()) {
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        when (direction) {
+                            ItemTouchHelper.LEFT -> {
+                                favouriteAdapter.deleteLocation(viewHolder.adapterPosition)
+                            }
+                        }
+                    }
+                }
+
+                val touchHelper = ItemTouchHelper(swipeGesture)
+                touchHelper.attachToRecyclerView(binding.rvFaqs)
             }
 
             mainViewModel.allLocation.observe(this) { locations ->
