@@ -25,22 +25,21 @@ import jan.dhan.darshak.ui.MainActivity
 
 
 class FavoriteAdapter(private val items:ArrayList<Favoriteentity>,
-                      private val mContext: Context?
+                      private val mContext: Context?,
 ):RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
 
      class ViewHolder(private val itemView: View) : RecyclerView.ViewHolder(itemView){
 
-         val clSinglePlace: ConstraintLayout = itemView.findViewById(R.id.clSinglePlace)
-         val tvResultHeading: TextView = itemView.findViewById(R.id.tvResultHeading)
-         val tvAddress: TextView = itemView.findViewById(R.id.tvAddress)
-         val tvTimings: TextView = itemView.findViewById(R.id.tvTimings)
-         val ivSpeak: ImageView = itemView.findViewById(R.id.ivSpeak)
-         val ivDirectionIcon: ImageView = itemView.findViewById(R.id.ivDirectionIcon)
-         val ivCallIcon: ImageView = itemView.findViewById(R.id.ivCallIcon)
-         val ivSaveIcon: ImageView = itemView.findViewById(R.id.ivSaveIcon)
-         val ivShareIcon: ImageView = itemView.findViewById(R.id.ivShareIcon)
-         val rbRatings: RatingBar = itemView.findViewById(R.id.rbRatings)
-         val tvRatingCount: TextView = itemView.findViewById(R.id.tvRatingCount)
+         val clSinglePlace: ConstraintLayout = itemView.findViewById(R.id.clFavoritePlace)
+         val tvResultHeading: TextView = itemView.findViewById(R.id.tvHeading)
+         val tvAddress: TextView = itemView.findViewById(R.id.tvfavoriteAddress)
+         val tvTimings: TextView = itemView.findViewById(R.id.tvfavTimings)
+         val ivSpeak: ImageView = itemView.findViewById(R.id.ivfavSpeak)
+         val ivDirectionIcon: ImageView = itemView.findViewById(R.id.ivfavDirectionIcon)
+         val ivCallIcon: ImageView = itemView.findViewById(R.id.ivfavCallIcon)
+         val ivShareIcon: ImageView = itemView.findViewById(R.id.ivfavShareIcon)
+         val rbRatings: RatingBar = itemView.findViewById(R.id.rbfavRatings)
+         val tvRatingCount: TextView = itemView.findViewById(R.id.tvfavRatingCount)
      }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -52,7 +51,7 @@ class FavoriteAdapter(private val items:ArrayList<Favoriteentity>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item =items[position]
         Log.d("dsf", "onBindViewHolder: "+items)
-        holder.tvResultHeading?.text=item.name
+        holder.tvResultHeading.text=item.name
         holder.tvAddress.text=item.address
         holder.rbRatings.rating=item.rating?.toFloat() ?:0F
         holder.tvRatingCount.text=item.ratingCount
@@ -83,10 +82,7 @@ class FavoriteAdapter(private val items:ArrayList<Favoriteentity>,
             holder.tvTimings.text = compatTimings
         }
 
-        holder.ivSaveIcon.setOnClickListener {
 
-            Toast.makeText(mContext, "Save Button Clicked", Toast.LENGTH_SHORT).show()
-        }
 
         holder.ivSpeak.setOnClickListener {
             (mContext as MainActivity).sayOutLoud("${item.name}")

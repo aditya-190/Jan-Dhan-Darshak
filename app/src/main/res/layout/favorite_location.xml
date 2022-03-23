@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clSinglePlace"
+    android:id="@+id/clFavoritePlace"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
@@ -10,7 +10,7 @@
     android:paddingVertical="16dp">
 
     <TextView
-        android:id="@+id/tvResultHeading"
+        android:id="@+id/tvHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -25,7 +25,7 @@
         tools:text="@string/sample_atm" />
 
     <TextView
-        android:id="@+id/tvAddress"
+        android:id="@+id/tvfavoriteAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -35,11 +35,11 @@
         android:textSize="12sp"
         android:textStyle="normal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvResultHeading"
+        app:layout_constraintTop_toBottomOf="@id/tvHeading"
         tools:text="@string/sample_address" />
 
     <RatingBar
-        android:id="@+id/rbRatings"
+        android:id="@+id/rbfavRatings"
         style="?android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,10 +52,10 @@
         android:numStars="5"
         android:stepSize="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvAddress" />
+        app:layout_constraintTop_toBottomOf="@id/tvfavoriteAddress" />
 
     <TextView
-        android:id="@+id/tvRatingCount"
+        android:id="@+id/tvfavRatingCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -63,12 +63,12 @@
         android:textColor="@color/hint_text_color"
         android:textSize="12sp"
         android:textStyle="normal"
-        app:layout_constraintBottom_toBottomOf="@id/rbRatings"
-        app:layout_constraintStart_toEndOf="@id/rbRatings"
-        app:layout_constraintTop_toTopOf="@id/rbRatings" />
+        app:layout_constraintBottom_toBottomOf="@id/rbfavRatings"
+        app:layout_constraintStart_toEndOf="@id/rbfavRatings"
+        app:layout_constraintTop_toTopOf="@id/rbfavRatings" />
 
     <TextView
-        android:id="@+id/tvTimings"
+        android:id="@+id/tvfavTimings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semi_bold"
@@ -76,11 +76,11 @@
         android:textSize="12sp"
         android:textStyle="normal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rbRatings"
+        app:layout_constraintTop_toBottomOf="@id/rbfavRatings"
         tools:text="@string/sample_timings" />
 
     <ImageView
-        android:id="@+id/ivSpeak"
+        android:id="@+id/ivfavSpeak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -88,45 +88,41 @@
         android:layout_marginStart="10dp"
         android:contentDescription="@string/listen_icon"
         android:src="@drawable/icon_speak"
-        app:layout_constraintBottom_toBottomOf="@id/tvResultHeading"
-        app:layout_constraintStart_toEndOf="@id/tvResultHeading"
-        app:layout_constraintTop_toTopOf="@id/tvResultHeading" />
+        app:layout_constraintBottom_toBottomOf="@id/tvHeading"
+        app:layout_constraintStart_toEndOf="@id/tvHeading"
+        app:layout_constraintTop_toTopOf="@id/tvHeading" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTimings">
+        app:layout_constraintTop_toBottomOf="@id/tvfavTimings">
 
         <ImageView
-            android:id="@+id/ivDirectionIcon"
+            android:id="@+id/ivfavDirectionIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:paddingRight="40dp"
+            android:paddingLeft="10dp"
             android:contentDescription="@string/icon_direction"
             android:src="@drawable/icon_directions" />
 
         <ImageView
-            android:id="@+id/ivCallIcon"
+            android:id="@+id/ivfavCallIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:paddingRight="40dp"
             android:contentDescription="@string/icon_call"
             android:src="@drawable/icon_call" />
 
         <ImageView
-            android:id="@+id/ivSaveIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/icon_save"
-            android:src="@drawable/icon_save" />
-
-        <ImageView
-            android:id="@+id/ivShareIcon"
+            android:id="@+id/ivfavShareIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/icon_share"
