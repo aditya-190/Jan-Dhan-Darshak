@@ -38,4 +38,13 @@
     <string name="change">बदल</string>
     <string name="language">इंग्रजी</string>
     <string name="save">जतन करा</string>
+    <string name="cash_available">रोख उपलब्ध ?</string>
+    <string name="yes">होय</string>
+    <string name="no">नाही</string>
+    <string name="crowd_strength">गर्दीची ताकद ?</string>
+    <string name="_5">05+</string>
+    <string name="_10">10+</string>
+    <string name="_15">15+</string>
+    <string name="review">पुनरावलोकन</string>
+    <string name="no_cash">%2$s लोकांपैकी %1$s लोक पैसे नाहीत असे म्हणतात.</string>
 </resources>

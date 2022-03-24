@@ -38,4 +38,13 @@
     <string name="change">ಬದಲಾವಣೆ</string>
     <string name="language">ಭಾಷೆ</string>
     <string name="save">ಉಳಿಸಿ</string>
+    <string name="cash_available">ನಗದು ಲಭ್ಯವಿದೆ ?</string>
+    <string name="yes">ಹೌದು</string>
+    <string name="no">ಇಲ್ಲ</string>
+    <string name="crowd_strength">ಗುಂಪಿನ ಶಕ್ತಿ ?</string>
+    <string name="_5">05+</string>
+    <string name="_10">10+</string>
+    <string name="_15">15+</string>
+    <string name="review">ಸಮೀಕ್ಷೆ</string>
+    <string name="no_cash">%2$s ಜನರಲ್ಲಿ %1$s ಜನರು ನಗದು ಇಲ್ಲ ಎಂದು ಹೇಳುತ್ತಾರೆ.</string>
 </resources>

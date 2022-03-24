@@ -38,4 +38,13 @@
     <string name="change">ਤਬਦੀਲੀ</string>
     <string name="language">ਭਾਸ਼ਾ</string>
     <string name="save">ਬਚਾਓ</string>
+    <string name="cash_available">ਨਕਦ ਉਪਲਬਧ ਹੈ ?</string>
+    <string name="yes">ਹਾਂ</string>
+    <string name="no">ਨਹੀਂ</string>
+    <string name="crowd_strength">ਭੀੜ ਦੀ ਤਾਕਤ ?</string>
+    <string name="_5">05+</string>
+    <string name="_10">10+</string>
+    <string name="_15">15+</string>
+    <string name="review">ਸਮੀਖਿਆ</string>
+    <string name="no_cash">%2$s ਵਿੱਚੋਂ %1$s ਲੋਕਾਂ ਦਾ ਕਹਿਣਾ ਹੈ ਕਿ ਕੋਈ ਨਕਦੀ ਨਹੀਂ ਹੈ।</string>
 </resources>

@@ -73,4 +73,5 @@
     <string name="_10">10+</string>
     <string name="_15">15+</string>
     <string name="review">Review</string>
+    <string name="no_cash">%1$s out of %2$s peoples says no cash.</string>
 </resources>
