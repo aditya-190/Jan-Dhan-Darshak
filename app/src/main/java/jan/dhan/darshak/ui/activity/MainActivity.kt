@@ -61,6 +61,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.maps.android.SphericalUtil
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter
@@ -113,6 +116,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     private lateinit var explanationFragment: ExplanationFragment
     private val formFragment = FormFragment()
     private val mainViewModel: MainViewModel by viewModels()
+    private lateinit var db: FirebaseFirestore
 
     @Inject
     lateinit var googlePlaces: NearbyPointsApi
@@ -132,6 +136,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        db = Firebase.firestore
+
+        val review = hashMapOf(
+            "placeId" to "ID GOES HERE",
+            "cashAvailable" to 1,
+            "crowd" to "5"
+        )
+
+        db.collection("review")
+            .add(review)
+            .addOnSuccessListener { _ ->
+                Toast.makeText(this@MainActivity, "Thank You for the review.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { _ ->
+                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+            }
+
+        db.collection("review")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    Toast.makeText(this@MainActivity, "${document.data}", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { _ ->
+                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+            }
 
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
@@ -822,6 +854,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                 } else {
                     binding.tvPinnedTimings.text = compatTimings
                 }
+
                 binding.ivPinnedDirectionIcon.setOnClickListener {
                     Intent(
                         Intent.ACTION_VIEW,
