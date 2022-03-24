@@ -57,6 +57,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -82,6 +83,7 @@ import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
 import android.location.Location as Locals
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnInitListener {
@@ -113,6 +115,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
     private val formFragment = FormFragment()
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var db: FirebaseFirestore
+    private lateinit var selectedLocationPlaceId: String
 
     @Inject
     lateinit var googlePlaces: NearbyPointsApi
@@ -134,35 +137,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         setContentView(binding.root)
 
         db = Firebase.firestore
-
-//        val review = hashMapOf(
-//            "placeId" to "ID GOES HERE",
-//            "cashAvailable" to 1,
-//            "crowd" to "5"
-//        )
-//
-//        db.collection("review")
-//            .add(review)
-//            .addOnSuccessListener { _ ->
-//                Toast.makeText(this@MainActivity, "Thank You for the review.", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//            .addOnFailureListener { _ ->
-//                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//
-//        db.collection("review")
-//            .get()
-//            .addOnSuccessListener { result ->
-//                for (document in result) {
-//                    Toast.makeText(this@MainActivity, "${document.data}", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//            .addOnFailureListener { _ ->
-//                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
 
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
@@ -694,8 +668,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         }
 
         binding.ivReview.setOnClickListener {
-            var selectedCash = false
-            var selectedCrowd = false
+            var selectedCash = "yes"
+            var selectedCrowd = ""
 
             val dialog = Dialog(this)
             dialog.setContentView(R.layout.review_popup)
@@ -725,7 +699,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             }
 
             noLayout.setOnClickListener {
-                selectedCash = true
+                selectedCash = "no"
 
                 noLayout.also {
                     it.background = resources.getDrawable(R.drawable.bg_round_red, theme)
@@ -739,7 +713,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             }
 
             tvFive.setOnClickListener {
-                selectedCrowd = true
+                selectedCrowd = "5+"
 
                 tvFive.also {
                     it.background = resources.getDrawable(R.drawable.bg_filled_round, theme)
@@ -758,7 +732,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             }
 
             tvTen.setOnClickListener {
-                selectedCrowd = true
+                selectedCrowd = "10+"
 
                 tvTen.also {
                     it.background = resources.getDrawable(R.drawable.bg_filled_round, theme)
@@ -777,7 +751,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             }
 
             tvFifteen.setOnClickListener {
-                selectedCrowd = true
+                selectedCrowd = "15+"
 
                 tvFifteen.also {
                     it.background = resources.getDrawable(R.drawable.bg_filled_round, theme)
@@ -796,15 +770,105 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             }
 
             tvReviewButton.setOnClickListener {
-                if (selectedCash && selectedCrowd) {
-                    Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show()
+                if (selectedCash != "" && selectedCrowd != "") {
+                    var review: HashMap<String, Any>
+
+                    review = if (selectedCash == "yes") {
+                        hashMapOf(
+                            "placeId" to selectedLocationPlaceId,
+                            "yes" to 1,
+                            "no" to 0,
+                            "crowd" to selectedCrowd
+                        )
+                    } else {
+                        hashMapOf(
+                            "placeId" to selectedLocationPlaceId,
+                            "yes" to 0,
+                            "no" to 1,
+                            "crowd" to selectedCrowd
+                        )
+                    }
+                    setDataToFireStore(review, dialog, selectedCash)
                 } else {
                     Toast.makeText(this, "Please fill above inputs.", Toast.LENGTH_SHORT).show()
                 }
             }
-
             dialog.show()
         }
+    }
+
+    private fun setDataToFireStore(
+        review: HashMap<String, Any>,
+        dialog: Dialog,
+        selectedCash: String
+    ) {
+        db.collection("review").document(selectedLocationPlaceId).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val document = task.result
+
+                    if (document.exists()) {
+                        if (selectedCash == "yes") {
+                            db.collection("review").document(selectedLocationPlaceId)
+                                .update("yes", FieldValue.increment(1)).addOnSuccessListener {
+                                    dialog.dismiss()
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Thank for your inputs.",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }.addOnFailureListener {
+                                    dialog.dismiss()
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Something went wrong.",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                        } else {
+                            db.collection("review").document(selectedLocationPlaceId)
+                                .update("no", FieldValue.increment(1)).addOnSuccessListener {
+                                    dialog.dismiss()
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Thank for your inputs.",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }.addOnFailureListener {
+                                    dialog.dismiss()
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Something went wrong.",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                        }
+                    } else {
+                        db.collection("review").document(selectedLocationPlaceId)
+                            .set(review).addOnSuccessListener {
+                                dialog.dismiss()
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Thank for your inputs.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }.addOnFailureListener {
+                                dialog.dismiss()
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Something went wrong.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                    }
+                }
+            }
     }
 
     private fun updateLanguage(languageId: String, firstTime: Boolean) {
@@ -868,6 +932,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
                 selectedMarker?.setIcon(bitmapFromVector(R.drawable.icon_marker_selected))
                 previousSelectedMarker = selectedMarker
+
+                selectedLocationPlaceId = marker.snippet.toString()
+
                 fetchPinnedData(marker.snippet)
             }
             true
@@ -893,6 +960,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
     private fun fetchPinnedData(pinnedId: String?) {
         hideShowProgressBar(showProgressbar = true)
+
+        db.collection("review").document(selectedLocationPlaceId).get()
+            .addOnSuccessListener { document ->
+                var yes = document.data?.get("yes").toString()
+                var no = document.data?.get("no").toString()
+                val crowd = document?.data?.get("crowd").toString()
+
+                if (yes == "null") yes = "0"
+                if (no == "null") no = "0"
+
+                val total= yes.toInt()+no.toInt()
+
+                if (no != "0") {
+                    binding.tvPinnedNoCash.visibility = View.VISIBLE
+                    binding.tvPinnedNoCash.text = String.format(getString(R.string.no_cash), no, total)
+                } else {
+                    binding.tvPinnedNoCash.visibility = View.GONE
+                }
+            }
 
         val placeFields = listOf(
             Place.Field.NAME,
