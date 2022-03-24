@@ -20,11 +20,8 @@ import android.text.Editable
 import android.text.Html
 import android.text.TextWatcher
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.view.Window
 import android.widget.ImageView
-import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -60,10 +57,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
-import com.google.maps.android.SphericalUtil
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.maps.android.SphericalUtil
 import dagger.hilt.android.AndroidEntryPoint
 import jan.dhan.darshak.R
 import jan.dhan.darshak.adapter.PlacesAdapter
@@ -79,7 +76,6 @@ import jan.dhan.darshak.utils.Common.sayOutLoud
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -139,31 +135,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
 
         db = Firebase.firestore
 
-        val review = hashMapOf(
-            "placeId" to "ID GOES HERE",
-            "cashAvailable" to 1,
-            "crowd" to "5"
-        )
-
-        db.collection("review")
-            .add(review)
-            .addOnSuccessListener { _ ->
-                Toast.makeText(this@MainActivity, "Thank You for the review.", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { _ ->
-                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
-            }
-
-        db.collection("review")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    Toast.makeText(this@MainActivity, "${document.data}", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { _ ->
-                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
-            }
+//        val review = hashMapOf(
+//            "placeId" to "ID GOES HERE",
+//            "cashAvailable" to 1,
+//            "crowd" to "5"
+//        )
+//
+//        db.collection("review")
+//            .add(review)
+//            .addOnSuccessListener { _ ->
+//                Toast.makeText(this@MainActivity, "Thank You for the review.", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
+//            .addOnFailureListener { _ ->
+//                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
+//
+//        db.collection("review")
+//            .get()
+//            .addOnSuccessListener { result ->
+//                for (document in result) {
+//                    Toast.makeText(this@MainActivity, "${document.data}", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//            .addOnFailureListener { _ ->
+//                Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
 
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
@@ -693,14 +692,117 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         slidingRootNavLayout.findViewById<ImageView>(R.id.ivCloseButton)?.setOnClickListener {
             slidingRootNavBuilder.closeMenu(true)
         }
+
         binding.ivReview.setOnClickListener {
-          val dialog=Dialog(this)
+            var selectedCash = false
+            var selectedCrowd = false
+
+            val dialog = Dialog(this)
             dialog.setContentView(R.layout.review_popup)
             dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog.window!!.setLayout(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-            dialog.findViewById<TextView>(R.id.tvYes).setOnClickListener {
+            dialog.window!!.setLayout(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
 
+            val yesLayout = dialog.findViewById<TextView>(R.id.tvYes)
+            val noLayout = dialog.findViewById<TextView>(R.id.tvNo)
+            val tvFive = dialog.findViewById<TextView>(R.id.tvFive)
+            val tvTen = dialog.findViewById<TextView>(R.id.tvTen)
+            val tvFifteen = dialog.findViewById<TextView>(R.id.tvFifteen)
+            val tvReviewButton = dialog.findViewById<TextView>(R.id.tvReviewButton)
+
+            yesLayout.setOnClickListener {
+                yesLayout.also {
+                    it.background = resources.getDrawable(R.drawable.bg_round_blue, theme)
+                    it.setTextColor(resources.getColor(R.color.white, theme))
+                }
+
+                noLayout.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke_red, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
             }
+
+            noLayout.setOnClickListener {
+                selectedCash = true
+
+                noLayout.also {
+                    it.background = resources.getDrawable(R.drawable.bg_round_red, theme)
+                    it.setTextColor(resources.getColor(R.color.white, theme))
+                }
+
+                yesLayout.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
+            }
+
+            tvFive.setOnClickListener {
+                selectedCrowd = true
+
+                tvFive.also {
+                    it.background = resources.getDrawable(R.drawable.bg_filled_round, theme)
+                    it.setTextColor(resources.getColor(R.color.white, theme))
+                }
+
+                tvTen.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke_round, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
+
+                tvFifteen.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke_round, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
+            }
+
+            tvTen.setOnClickListener {
+                selectedCrowd = true
+
+                tvTen.also {
+                    it.background = resources.getDrawable(R.drawable.bg_filled_round, theme)
+                    it.setTextColor(resources.getColor(R.color.white, theme))
+                }
+
+                tvFive.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke_round, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
+
+                tvFifteen.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke_round, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
+            }
+
+            tvFifteen.setOnClickListener {
+                selectedCrowd = true
+
+                tvFifteen.also {
+                    it.background = resources.getDrawable(R.drawable.bg_filled_round, theme)
+                    it.setTextColor(resources.getColor(R.color.white, theme))
+                }
+
+                tvFive.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke_round, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
+
+                tvTen.also {
+                    it.background = resources.getDrawable(R.drawable.bg_stroke_round, theme)
+                    it.setTextColor(resources.getColor(R.color.black, theme))
+                }
+            }
+
+            tvReviewButton.setOnClickListener {
+                if (selectedCash && selectedCrowd) {
+                    Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Please fill above inputs.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
             dialog.show()
         }
     }
@@ -710,7 +812,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
         Locale.setDefault(locale)
         val configuration: Configuration = this@MainActivity.resources.configuration
         configuration.setLocale(locale)
-        baseContext.resources.updateConfiguration(configuration, baseContext.resources.displayMetrics)
+        baseContext.resources.updateConfiguration(
+            configuration,
+            baseContext.resources.displayMetrics
+        )
 
         val editor = getSharedPreferences("settings", MODE_PRIVATE).edit()
         editor.putString("language", locale.language)
@@ -768,7 +873,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             true
         }
         mGoogleMap.setOnMapClickListener {
-            binding.mcvReviewContainer.visibility=View.GONE
+            binding.mcvReviewContainer.visibility = View.GONE
             if (selectedMarker != null)
                 selectedMarker?.setIcon(bitmapFromVector(R.drawable.icon_marker))
 
@@ -800,12 +905,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             Place.Field.WEBSITE_URI
         )
         val request = FetchPlaceRequest.newInstance(pinnedId!!, placeFields)
-        if(SphericalUtil.computeDistanceBetween(currentLocation, selectedMarkerLocation)<=2000&&selectedCategory=="atm")
-        {
-            binding.mcvReviewContainer.visibility=View.VISIBLE
-        }
-        else{
-            binding.mcvReviewContainer.visibility=View.GONE
+        if (SphericalUtil.computeDistanceBetween(
+                currentLocation,
+                selectedMarkerLocation
+            ) <= 2000 && selectedCategory == "atm"
+        ) {
+            binding.mcvReviewContainer.visibility = View.VISIBLE
+        } else {
+            binding.mcvReviewContainer.visibility = View.GONE
         }
         placesClient.fetchPlace(request)
             .addOnSuccessListener { response: FetchPlaceResponse ->
@@ -933,102 +1040,101 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
                 placesClient.fetchPlace(request)
                     .addOnSuccessListener { response: FetchPlaceResponse ->
                         val place = response.place
-                        val metada = place.photoMetadatas
-                        if (metada == null || metada.isEmpty()) {
+                        val metaData = place.photoMetadatas
+                        if (metaData == null || metaData.isEmpty()) {
                             Log.w("LOL", "No photo metadata.")
 
 
-                        }else {
-                            for (i in 0..metada.size - 1) {
-                                var photoMetadata = metada.get(i)
+                        } else {
+                            for (i in 0 until metaData.size) {
+                                val photoMetadata = metaData[i]
 
                                 list.add(photoMetadata)
                             }
                         }
-                        val disclaimer = DetailsFragment(list,place,selectedMarkerLocation)
+                        val disclaimer = DetailsFragment(list, place, selectedMarkerLocation)
                         disclaimer.show(supportFragmentManager, "TAG")
                     }
             }
-                binding.bottomNavigation
-                    .animate()
-                    .alpha(0.0F)
-                    .setDuration(500)
-                    .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator?) {}
-                        override fun onAnimationCancel(animation: Animator?) {}
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationEnd(animation: Animator?) {
-                            binding.bottomNavigation.visibility = View.GONE
-                        }
-                    })
+            binding.bottomNavigation
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.bottomNavigation.visibility = View.GONE
+                    }
+                })
 
-                binding.mcvBottomSheetContainer
-                    .animate()
-                    .alpha(0.0F)
-                    .setDuration(500)
-                    .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator?) {}
-                        override fun onAnimationCancel(animation: Animator?) {}
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationEnd(animation: Animator?) {
-                            binding.mcvBottomSheetContainer.visibility = View.GONE
-                        }
-                    })
+            binding.mcvBottomSheetContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvBottomSheetContainer.visibility = View.GONE
+                    }
+                })
 
-                binding.mcvCurrentContainer
-                    .animate()
-                    .alpha(0.0F)
-                    .setDuration(500)
-                    .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator?) {}
-                        override fun onAnimationCancel(animation: Animator?) {}
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationEnd(animation: Animator?) {
-                            binding.mcvCurrentContainer.visibility = View.GONE
-                        }
-                    })
+            binding.mcvCurrentContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvCurrentContainer.visibility = View.GONE
+                    }
+                })
 
-                binding.mcvDirectionContainer
-                    .animate()
-                    .alpha(0.0F)
-                    .setDuration(500)
-                    .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator?) {}
-                        override fun onAnimationCancel(animation: Animator?) {}
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationEnd(animation: Animator?) {
-                            binding.mcvDirectionContainer.visibility = View.GONE
-                        }
-                    })
+            binding.mcvDirectionContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvDirectionContainer.visibility = View.GONE
+                    }
+                })
 
-                binding.mcvLayerContainer
-                    .animate()
-                    .alpha(0.0F)
-                    .setDuration(500)
-                    .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator?) {}
-                        override fun onAnimationCancel(animation: Animator?) {}
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationEnd(animation: Animator?) {
-                            binding.mcvLayerContainer.visibility = View.GONE
-                        }
-                    })
+            binding.mcvLayerContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvLayerContainer.visibility = View.GONE
+                    }
+                })
 
-                binding.mcvNorthFacingContainer
-                    .animate()
-                    .alpha(0.0F)
-                    .setDuration(500)
-                    .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator?) {}
-                        override fun onAnimationCancel(animation: Animator?) {}
-                        override fun onAnimationRepeat(animation: Animator?) {}
-                        override fun onAnimationEnd(animation: Animator?) {
-                            binding.mcvNorthFacingContainer.visibility = View.GONE
-                        }
-                    })
+            binding.mcvNorthFacingContainer
+                .animate()
+                .alpha(0.0F)
+                .setDuration(500)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.mcvNorthFacingContainer.visibility = View.GONE
+                    }
+                })
 
-            }
-        else {
+        } else {
             binding.mcvPinnedContainer.visibility = View.GONE
 
             binding.bottomNavigation

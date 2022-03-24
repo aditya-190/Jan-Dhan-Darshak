@@ -3,12 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/JanDhan/app/src/main/res/layout/activity_main.xml" value="0.1" />
-        <entry key="..\:/JanDhan/app/src/main/res/layout/details_layout.xml" value="0.11302083333333333" />
-        <entry key="..\:/JanDhan/app/src/main/res/layout/form_sheets.xml" value="0.18432971014492755" />
-        <entry key="..\:/JanDhan/app/src/main/res/layout/review_popup.xml" value="0.264" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.163" />
+        <entry key="app/src/main/res/drawable/bg_filled_round.xml" value="0.12" />
+        <entry key="app/src/main/res/drawable/bg_round.xml" value="0.12" />
         <entry key="app/src/main/res/drawable/bg_round_corners.xml" value="0.1465" />
+        <entry key="app/src/main/res/drawable/bg_stroke.xml" value="0.12" />
+        <entry key="app/src/main/res/drawable/bg_stroke_red.xml" value="0.12" />
+        <entry key="app/src/main/res/drawable/bg_stroke_round.xml" value="0.12" />
         <entry key="app/src/main/res/drawable/bottom_navigation_colors.xml" value="0.163" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.163" />
         <entry key="app/src/main/res/drawable/icon_atm.xml" value="0.1235" />
@@ -52,6 +53,7 @@
         <entry key="app/src/main/res/layout/modal_bottom_sheet.xml" value="0.193359375" />
         <entry key="app/src/main/res/layout/navigation_drawer.xml" value="0.2578125" />
         <entry key="app/src/main/res/layout/pinned_location.xml" value="0.193359375" />
+        <entry key="app/src/main/res/layout/review_popup.xml" value="0.2578125" />
         <entry key="app/src/main/res/layout/single_filter.xml" value="0.193359375" />
         <entry key="app/src/main/res/layout/single_language.xml" value="0.2578125" />
         <entry key="app/src/main/res/layout/single_location.xml" value="0.335" />
