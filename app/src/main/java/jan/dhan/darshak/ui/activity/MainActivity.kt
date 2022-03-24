@@ -768,7 +768,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, TextToSpeech.OnIni
             Place.Field.WEBSITE_URI
         )
         val request = FetchPlaceRequest.newInstance(pinnedId!!, placeFields)
-        if(SphericalUtil.computeDistanceBetween(currentLocation, selectedMarkerLocation)<=2000&&selectedCategory=="atm")
+        if(SphericalUtil.computeDistanceBetween(currentLocation, selectedMarkerLocation)<=20&&selectedCategory=="atm")
         {
             binding.mcvReviewContainer.visibility=View.VISIBLE
         }

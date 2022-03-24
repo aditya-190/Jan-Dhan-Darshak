@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/JanDhan/app/src/main/res/drawable/bg_stroke_round.xml" value="0.124" />
         <entry key="..\:/JanDhan/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/JanDhan/app/src/main/res/layout/details_layout.xml" value="0.11302083333333333" />
         <entry key="..\:/JanDhan/app/src/main/res/layout/form_sheets.xml" value="0.18432971014492755" />
