@@ -38,4 +38,13 @@
     <string name="change">மாற்றம்</string>
     <string name="language">மொழி</string>
     <string name="save">சேமிக்க</string>
+    <string name="cash_available">பணம் கிடைக்கும் ?</string>
+    <string name="yes">ஆம்</string>
+    <string name="no">இல்லை</string>
+    <string name="crowd_strength">கூட்ட பலம் ?</string>
+    <string name="_5">05+</string>
+    <string name="_10">10+</string>
+    <string name="_15">15+</string>
+    <string name="review">விமர்சனம்</string>
+    <string name="no_cash">%2$s இல் %1$s மக்கள் பணம் இல்லை என்று கூறுகிறார்கள்.</string>
 </resources>

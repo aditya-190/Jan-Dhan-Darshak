@@ -38,4 +38,13 @@
     <string name="change">ફેરફાર</string>
     <string name="language">ભાષા</string>
     <string name="save">સાચવો</string>
+    <string name="cash_available">રોકડ ઉપલબ્ધ છે ?</string>
+    <string name="yes">હા</string>
+    <string name="no">ના</string>
+    <string name="crowd_strength">ભીડની તાકાત ?</string>
+    <string name="_5">05+</string>
+    <string name="_10">10+</string>
+    <string name="_15">15+</string>
+    <string name="review">સમીક્ષા</string>
+    <string name="no_cash">%2$s માંથી %1$s લોકો કહે છે કે કોઈ રોકડ નથી.</string>
 </resources>

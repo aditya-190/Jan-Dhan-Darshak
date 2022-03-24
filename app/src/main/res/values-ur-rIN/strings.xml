@@ -38,4 +38,13 @@
     <string name="change">تبدیلی</string>
     <string name="language">زبان</string>
     <string name="save">محفوظ کریں</string>
+    <string name="cash_available">نقدی دستیاب ہے?</string>
+    <string name="yes">جی ہاں</string>
+    <string name="no">نہیں</string>
+    <string name="crowd_strength">بھیڑ کی طاقت ?</string>
+    <string name="_5">05+</string>
+    <string name="_10">10+</string>
+    <string name="_15">15+</string>
+    <string name="review">جائزہ لیں</string>
+    <string name="no_cash">%2$s میں سے %1$s لوگوں کا کہنا ہے کہ کوئی نقد نہیں۔</string>
 </resources>
